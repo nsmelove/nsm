@@ -1,3 +1,5 @@
 .gradle
 /.idea
 /out
+/nsm-mvc/*.iml
+/nsm-mvc/build
