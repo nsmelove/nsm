@@ -5,10 +5,7 @@ import com.nsm.mvc.bean.User;
 import com.nsm.mvc.dao.UserDao;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,7 +18,6 @@ import java.util.List;
 public class UserController extends ErrorHandler{
     @Resource
     private UserDao userDao;
-
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public List<User> users(@RequestParam(value = "offset", required = false)Integer offset, @RequestParam(value = "offset",required = false)Integer limit){
@@ -38,7 +34,7 @@ public class UserController extends ErrorHandler{
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public long users(@RequestBody User user){
-        long userId = IdUtils.nextId();
+        long userId = IdUtils.nextLong();
         user.setUserId(userId);
         userDao.addUser(user);
         return  userId;
