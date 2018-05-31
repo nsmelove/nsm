@@ -2,7 +2,7 @@ apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 gretty {
     contextPath = '/'
-    // ... many more properties
+    //jvmArgs = ["-Dfile.encoding=UTF-8"]
 }
 buildscript{
     repositories {
