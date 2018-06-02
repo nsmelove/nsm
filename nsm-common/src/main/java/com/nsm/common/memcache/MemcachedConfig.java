@@ -7,22 +7,12 @@ import java.util.List;
 /**
  * Created by Administrator on 2018/5/31.
  */
-public class MemcachedConfig{
-    private static MemcachedConfig config;
+public final class MemcachedConfig{
     private static String confPath = "memcache.yaml";
-    public static MemcachedConfig config(){
-        if(config == null) {
-            config = YamlConfigUtils.getConfig(MemcachedConfig.class, confPath);
-        }
-        return config;
-    }
+    protected static MemcachedConfig config = YamlConfigUtils.loadConfig(confPath, MemcachedConfig.class);
 
     public List<String> servers;
 
+    public long connectTimeout;
 
-
-    public static void main(String[] args) {
-        MemcachedConfig config = MemcachedConfig.config();
-        //System.out.println(MemcachedConfig.conf.servers);
-    }
 }

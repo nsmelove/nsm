@@ -23,9 +23,9 @@ public class MemcachedUtil {
 
     public static MemcachedClient getMemClient(){
         if(client == null) {
-            synchronized (MemcachedUtil.class) {
+            synchronized (MemcachedClient.class) {
                 if(client == null) {
-                    MemcachedConfig config = YamlConfigUtils.loadConfig(confPath, MemcachedConfig.class);
+                    MemcachedConfig config = MemcachedConfig.config;
                     List<String> servers = config.servers;
                     if(servers != null && !servers.isEmpty()) {
                         Map<InetSocketAddress, InetSocketAddress> addressMap = new HashMap<>(servers.size());
@@ -38,9 +38,10 @@ public class MemcachedUtil {
                             }
                         }
                         XMemcachedClientBuilder builder = new XMemcachedClientBuilder(addressMap);
+                        builder.setConnectTimeout(config.connectTimeout);
                         try {
                             client = builder.build();
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             logger.error("get memcache client err" , e);
                         }
                     }

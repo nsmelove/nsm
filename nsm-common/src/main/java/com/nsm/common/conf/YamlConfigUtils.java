@@ -15,35 +15,6 @@ public class YamlConfigUtils {
     private static Map<Class,Object> cachedConfigs = new HashMap<>();
 
     /**
-     * get cached config
-     * @param type Class of config
-     * @param <T> instance of config
-     * @return config
-     */
-    public static <T> T getConfig(Class<T> type){
-        return getConfig(type, null);
-    };
-
-    /**
-     * get cached config
-     * @param type Class of config
-     * @param loadConfigPath loadConfig path
-     * @param <T> instance of config
-     * @return config
-     */
-    public static <T> T getConfig(Class<T> type, String loadConfigPath){
-        if (!cachedConfigs.containsKey(type)) {
-            synchronized(type){
-                if(!cachedConfigs.containsKey(type)){
-                    T t = loadConfigPath == null ? loadConfig(type) : loadConfig(loadConfigPath, type);
-                    cachedConfigs.put(type, t);
-                }
-            }
-        }
-        return (T)cachedConfigs.get(type);
-    };
-
-    /**
      * load config
      * @param type Class of config
      * @param <T> instance of config
@@ -88,4 +59,33 @@ public class YamlConfigUtils {
         T t = yaml.loadAs(in, type);
         return t;
     }
+
+    /**
+     * get cached config
+     * @param type Class of config
+     * @param <T> instance of config
+     * @return config
+     */
+    public static <T> T getConfig(Class<T> type){
+        return getConfig(type, null);
+    };
+
+    /**
+     * get cached config
+     * @param type Class of config
+     * @param loadConfigPath loadConfig path
+     * @param <T> instance of config
+     * @return config
+     */
+    public static <T> T getConfig(Class<T> type, String loadConfigPath){
+        if (!cachedConfigs.containsKey(type)) {
+            synchronized(type){
+                if(!cachedConfigs.containsKey(type)){
+                    T t = loadConfigPath == null ? loadConfig(type) : loadConfig(loadConfigPath, type);
+                    cachedConfigs.put(type, t);
+                }
+            }
+        }
+        return (T)cachedConfigs.get(type);
+    };
 }

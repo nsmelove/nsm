@@ -1,3 +1,4 @@
 dependencies {
     compile group: 'com.googlecode.xmemcached', name: 'xmemcached', version: '2.0.0'
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
 }
