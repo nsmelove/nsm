@@ -1,8 +1,8 @@
 package com.nsm.mvc.filter;
 
-import com.google.common.hash.Hashing;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
+import com.nsm.common.utils.IdUtils;
+import com.nsm.mvc.bean.Session;
+import com.nsm.mvc.service.AuthService;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
@@ -10,7 +10,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.MessageDigest;
 
 /**
  * Created by nieshuming on 2018/5/31.
@@ -18,6 +17,8 @@ import java.security.MessageDigest;
 public class AuthFilter implements Filter{
     public static final String sessionId = "sid";
     public static final String userId = "uid";
+    private AuthService authService = new AuthService();
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -44,24 +45,26 @@ public class AuthFilter implements Filter{
         }
         //TODO do some req auth reject;
 
-        if(StringUtils.isEmpty(sid)){
+        if(!StringUtils.isEmpty(sid)){
             request.setAttribute(sessionId,sid);
             long uid = getUid(sid);
             request.setAttribute(userId, uid);
         }else {
-            httpResponse.setHeader(sessionId,generalSessionId());
+            sid = IdUtils.nextString32();
+            httpResponse.setHeader(sessionId,sid);
+            httpResponse.addCookie(new Cookie(sessionId, sid));
         }
         chain.doFilter(request, response);
     }
 
-    private String generalSessionId(){
-        long nanoseTime = System.nanoTime() + RandomUtils.nextInt(0,1000) * 1_000_000_000;
-        return Hashing.md5().hashLong(nanoseTime).toString().substring(8,24);
-    }
 
     private long getUid(String sid) {
-        //TODO get the login userId;
-        return System.currentTimeMillis();
+        Session session = authService.getSession(sid);
+        if(session != null) {
+            return session.getUserId();
+        }else {
+            return 0;
+        }
     }
 
     @Override

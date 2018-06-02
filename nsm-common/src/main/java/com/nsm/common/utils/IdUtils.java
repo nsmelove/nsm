@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by Administrator on 2018/5/27.
+ * Created by nsm on 2018/5/27
  */
 public class IdUtils {
     private static AtomicLong atomicLong = new AtomicLong();
@@ -21,11 +21,11 @@ public class IdUtils {
         return id;
     }
 
-    public static String nextString32(){
-        return nextString64().substring(8, 24);
+    public static String nextString16(){
+        return nextString32().substring(8, 24);
     }
 
-    public static String nextString64(){
+    public static String nextString32(){
         return Hashing.md5().hashString(UUID.randomUUID().toString()).toString();
     }
 

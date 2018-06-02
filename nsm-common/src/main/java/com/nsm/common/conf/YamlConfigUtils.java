@@ -5,14 +5,11 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * Created by Administrator on 2018/5/31.
+ * Created by nsm on 2018/5/31
  */
 public class YamlConfigUtils {
-    private static Map<Class,Object> cachedConfigs = new HashMap<>();
 
     /**
      * load config
@@ -56,36 +53,7 @@ public class YamlConfigUtils {
         if(in == null) {
             throw new NullPointerException("resource '" + path + "' not find !");
         }
-        T t = yaml.loadAs(in, type);
-        return t;
+        return yaml.loadAs(in, type);
     }
 
-    /**
-     * get cached config
-     * @param type Class of config
-     * @param <T> instance of config
-     * @return config
-     */
-    public static <T> T getConfig(Class<T> type){
-        return getConfig(type, null);
-    };
-
-    /**
-     * get cached config
-     * @param type Class of config
-     * @param loadConfigPath loadConfig path
-     * @param <T> instance of config
-     * @return config
-     */
-    public static <T> T getConfig(Class<T> type, String loadConfigPath){
-        if (!cachedConfigs.containsKey(type)) {
-            synchronized(type){
-                if(!cachedConfigs.containsKey(type)){
-                    T t = loadConfigPath == null ? loadConfig(type) : loadConfig(loadConfigPath, type);
-                    cachedConfigs.put(type, t);
-                }
-            }
-        }
-        return (T)cachedConfigs.get(type);
-    };
 }

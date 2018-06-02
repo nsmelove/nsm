@@ -20,7 +20,7 @@ public class ErrorHandler {
      * @param ex
      * @return
      */
-    @ResponseBody
+
     @ResponseStatus(reason = "Internal Server Error",value = HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
     public ErrorCode errorHandler(Exception ex) {
