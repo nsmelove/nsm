@@ -4,6 +4,7 @@ import com.nsm.common.memcache.MemcachedUtil;
 import com.nsm.common.utils.JsonUtils;
 import com.nsm.mvc.bean.Session;
 import net.rubyeye.xmemcached.MemcachedClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,12 @@ public class AuthService {
     private Logger logger = Logger.getLogger(this.getClass());
     private MemcachedClient memClient = MemcachedUtil.getMemClient();
 
+    /**
+     * 新建会话
+     * @param sid 会话Id
+     * @param uid 用户Id
+     * @return 会话
+     */
     public Session newSession(String sid, long uid){
         Session session = new Session();
         session.setSessionId(sid);
@@ -22,7 +29,7 @@ public class AuthService {
         String jsonSession = JsonUtils.toJson(session);
         if(jsonSession != null) {
             try {
-                memClient.set(sid,0,session);
+                memClient.set(sid,0,jsonSession);
                 return session;
             } catch (Exception e) {
                 logger.error("save session error", e);
@@ -31,6 +38,11 @@ public class AuthService {
         return null;
     }
 
+    /**
+     * 获取会话
+     * @param sid 会话Id
+     * @return 会话
+     */
     public Session getSession(String sid){
         try {
             String jsonSession = memClient.get(sid);
@@ -41,5 +53,40 @@ public class AuthService {
             logger.error("get session error", e);
         }
         return null;
+    }
+
+    /**
+     * 更新会话
+     * @param session 会话
+     * @return 结果
+     */
+    public boolean updateSession(Session session){
+        if(session == null && StringUtils.isEmpty(session.getSessionId())) {
+            return false;
+        }
+        String jsonSession = JsonUtils.toJson(session);
+        try {
+            memClient.set(session.getSessionId(), 0, jsonSession);
+            return true;
+        } catch (Exception e) {
+            logger.error("update session error", e);
+            return false;
+        }
+    }
+
+    /**
+     * 清除会话
+     * @param sid 会话Id
+     * @return 结果
+     */
+    public boolean remSession(String sid){
+        try {
+            memClient.delete(sid);
+            return true;
+        }catch (Exception e) {
+            logger.error("remove session error", e);
+            return false;
+        }
+
     }
 }

@@ -1,13 +1,14 @@
 package com.nsm.mvc.exception;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.http.HttpStatus;
 
 /**
  * Created by Administrator on 2018/5/27.
  */
 public class ErrorCode {
-    public static ErrorCode INNER_ERROR = new ErrorCode(500, "系统内部错误");
-    public static ErrorCode NOT_FOUND = new ErrorCode(404, "没有找到数据");
+
+    public static final ErrorCode USER_PASSWORD_WRONG = new ErrorCode(1000, "用户名或密码错误");
 
     private int code;
     private String msg;
@@ -20,6 +21,10 @@ public class ErrorCode {
     }
     public String getMsg() {
         return msg;
+    }
+
+    public static ErrorCode fromHttpStatus(HttpStatus status){
+        return new ErrorCode(status.value(), status.getReasonPhrase());
     }
     @Override
     public String toString() {

@@ -1,7 +1,7 @@
 package com.nsm.mvc.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Created by Administrator on 2018/5/27.
@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class User {
     private long userId;
     private String username;
+    @JsonIgnore
     private String password;
 
     public long getUserId() {

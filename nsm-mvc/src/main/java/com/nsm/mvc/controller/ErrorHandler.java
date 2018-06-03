@@ -5,9 +5,9 @@ import com.nsm.mvc.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 /**
@@ -15,25 +15,47 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 public class ErrorHandler {
     private Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
+
     /**
      * 全局异常捕捉处理
-     * @param ex
-     * @return
+     * @param ex 异常
+     * @return httpResponse
      */
-
-    @ResponseStatus(reason = "Internal Server Error",value = HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = Exception.class)
-    public ErrorCode errorHandler(Exception ex) {
-        ErrorCode errorCode = ErrorCode.INNER_ERROR;
-        logger.error(ErrorCode.INNER_ERROR.getMsg(), ex);
-        return errorCode;
+    public ResponseEntity<ErrorCode> errorHandler(Exception ex) {
+        ErrorCode errorCode = ErrorCode.fromHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        logger.error(errorCode.getMsg(), ex);
+        return new ResponseEntity<>(errorCode, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ResponseBody
+    /**
+     * 参数异常
+     * @param ex 异常
+     * @return httpResponse
+     */
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorCode> parameterErrorHandler(MissingServletRequestParameterException ex) {
+        ErrorCode errorCode = ErrorCode.fromHttpStatus(HttpStatus.BAD_REQUEST);
+        logger.error(errorCode.getMsg(), ex);
+        return new ResponseEntity<>(errorCode, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 业务异常处理
+     * @param ex 异常
+     * @return httpResponse
+     */
     @ExceptionHandler(value = BusinessException.class)
-    public ErrorCode businessErrorHandler(BusinessException ex) {
-        logger.warn(ex.getErrorCode().getMsg());
-        return ex.getErrorCode();
+    public ResponseEntity<ErrorCode> businessErrorHandler(BusinessException ex) {
+        ErrorCode errorCode =  ex.getErrorCode();
+        HttpStatus httpStatus = null;
+        try {
+            httpStatus = HttpStatus.valueOf(errorCode.getCode());
+        }catch (IllegalArgumentException e){
+            httpStatus = HttpStatus.BAD_REQUEST;
+        }
+        logger.warn(errorCode.getMsg());
+        return new ResponseEntity<>(errorCode, httpStatus);
     }
 
 }

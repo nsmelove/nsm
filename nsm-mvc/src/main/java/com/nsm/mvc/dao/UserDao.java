@@ -16,8 +16,8 @@ public interface UserDao {
 
     User getUser(long uid);
 
-    List<User> getUsers(@Param("offset") int offset, @Param("limit")int limit);
-
     User getUserByUsername(String username);
+
+    List<User> getUsers(@Param("offset") int offset, @Param("limit")int limit);
 
 }

@@ -22,6 +22,15 @@
         where userId = #{uid}
     </select>
 
+    <select id="getUserByUsername" resultType="com.nsm.mvc.bean.User">
+        SELECT
+        userId,
+        username,
+        password
+        from User
+        where username = #{username}
+    </select>
+
     <select id="getUsers" resultType="com.nsm.mvc.bean.User">
         SELECT
             userId,
