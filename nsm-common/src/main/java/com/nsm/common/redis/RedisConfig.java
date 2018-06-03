@@ -8,8 +8,8 @@ import java.util.List;
  * Created by nieshuming on 2018/6/2.
  */
 public final class RedisConfig {
-    private static String confPath = "redis.yaml";
-    protected static RedisConfig config = YamlConfigUtils.loadConfig(confPath, RedisConfig.class);
+    private static String confFile= "redis.yaml";
+    protected static RedisConfig config = YamlConfigUtils.loadConfig(confFile, RedisConfig.class);
 
     /**
      * 单节点服务地址

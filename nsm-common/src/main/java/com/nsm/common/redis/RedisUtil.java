@@ -14,8 +14,8 @@ import java.util.Set;
  */
 public class RedisUtil {
     private static final Logger logger = LoggerFactory.getLogger(RedisUtil.class);
-    private static Jedis jedis = null;
-    private static JedisCluster jc = null;
+    private static volatile Jedis jedis = null;
+    private static volatile JedisCluster jc = null;
 
     public static Jedis geJedis(){
         if(jedis == null) {
@@ -32,6 +32,12 @@ public class RedisUtil {
                     String hostPart = server.substring(0, spIdx).trim();
                     int portNum = Integer.valueOf(server.substring(spIdx + 1).trim());
                     jedis = new Jedis(hostPart, portNum);
+                    Runtime.getRuntime().addShutdownHook(new Thread(){
+                        @Override
+                        public void run() {
+                            jedis.shutdown();
+                        }
+                    });
                 }
             }
         }
@@ -42,7 +48,7 @@ public class RedisUtil {
         if (jc == null) {
             synchronized (JedisCluster.class){
                 if(jc == null){
-                    Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+                    Set<HostAndPort> jedisClusterNodes = new HashSet<>();
                     RedisConfig config = RedisConfig.config;
                     if(config.servers == null || config.servers.isEmpty()) {
                         throw new IllegalArgumentException("no servers config find");

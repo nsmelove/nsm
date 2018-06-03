@@ -6,6 +6,7 @@ import net.rubyeye.xmemcached.utils.AddrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 public class MemcachedUtil {
     private static final Logger logger = LoggerFactory.getLogger(MemcachedUtil.class);
-    private static MemcachedClient client = null;
+    private static volatile MemcachedClient client = null;
 
     public static MemcachedClient getMemClient(){
         if(client == null) {
@@ -39,6 +40,16 @@ public class MemcachedUtil {
                         //builder.setCommandFactory(new BinaryCommandFactory());
                         try {
                             client = builder.build();
+                            Runtime.getRuntime().addShutdownHook(new Thread(){
+                                @Override
+                                public void run() {
+                                    try {
+                                        client.shutdown();
+                                    } catch (IOException e) {
+                                        logger.error("memcache shutdown err" , e);
+                                    }
+                                }
+                            });
                         } catch (Exception e) {
                             logger.error("get memcache client err" , e);
                         }
