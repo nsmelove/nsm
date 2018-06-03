@@ -36,7 +36,7 @@ public class MemcachedUtil {
                         }
                         XMemcachedClientBuilder builder = new XMemcachedClientBuilder(addressMap);
                         builder.setConnectTimeout(config.connectTimeout);
-                        builder.setEnableHealSession(false);
+                        //builder.setCommandFactory(new BinaryCommandFactory());
                         try {
                             client = builder.build();
                         } catch (Exception e) {
