@@ -10,7 +10,7 @@ import java.io.IOException;
 public class FastdfsTest {
     public static void main(String[] args) {
 
-        FastdfsClient client = FastdfsUtil.getClient();
+        FastdfsClient client = FastdfsClient.getClient();
         try {
             client.get_file_info1("group1/111");
         } catch (IOException e) {

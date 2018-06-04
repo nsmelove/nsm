@@ -1,12 +1,9 @@
 package com.nsm.common.memcache;
 
 import net.rubyeye.xmemcached.MemcachedClient;
-import net.rubyeye.xmemcached.exception.MemcachedException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
- * Created by nieshuming on 2018/6/2.
+ * Created by nieshuming on 2018/6/2
  */
 public class MemcachedTest {
 

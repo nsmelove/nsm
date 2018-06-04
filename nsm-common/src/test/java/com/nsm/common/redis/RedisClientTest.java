@@ -4,7 +4,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 
 /**
- * Created by nieshuming on 2018/6/2.
+ * Created by nieshuming on 2018/6/2
  */
 public class RedisClientTest {
 
