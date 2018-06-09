@@ -2,6 +2,7 @@
 
 #memcached服务器地址配置（master slave）,master和slave之间用空格隔开,可以没有slave
 servers:
-  - 192.168.1.11:11211
+#  - 192.168.1.11:11211
+  - 192.168.0.96:10005
 #memcached服务器超时时间3秒
 connectTimeout: 3000

@@ -2,4 +2,6 @@ dependencies {
     compile group: 'com.googlecode.xmemcached', name: 'xmemcached', version: '2.0.0'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
     compile group: 'net.oschina.zcx7878', name: 'fastdfs-client-java', version: '1.27.0.0'
+    //compile group: 'org.csource.fastdfs', name: 'fastdfs-client-java', version: '5.0.4-snapshot'
+    compile 'com.qiniu:qiniu-java-sdk:7.2.0'
 }
