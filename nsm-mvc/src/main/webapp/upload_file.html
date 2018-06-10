@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传</title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js" ></script>
+    <script>
+        $(document).ready(function(){
+            $("#upload_file").click(function () {
+                var fileData = new FormData(document.getElementById("upload"));
+                console.log("filedata:", fileData);
+                $.ajax({
+                    type: "POST",
+                    url: "file/upload",
+                    data: fileData/*JSON.stringify(user)*/,
+                    processData:false,
+                    contentType:false,
+                    success: function (data) {
+                        console.log("file upload success:", data);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        // 状态码
+                        console.log(XMLHttpRequest.status);
+                        // 状态
+                        console.log(XMLHttpRequest.readyState);
+                        // 错误信息
+                        console.log(textStatus);
+                    }
+                });
+            })
+        });
+    </script>
+</head>
+<body>
+    <form id="upload">
+        <input type="file" name="file" />
+    </form>
+    <button id="upload_file">上传文件</button>
+</body>
+</html>

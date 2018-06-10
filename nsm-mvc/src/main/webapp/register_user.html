@@ -2,20 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>添加用户</title>
+    <title>注册用户</title>
     <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js" ></script>
     <script>
         $(document).ready(function(){
-            $("#addUser").click(function () {
-                var user = {
-                    "username":$("#username").val(),
-                    "password":$("#password").val()
-                };
+            $("#registerUser").click(function () {
+                var registerInfo = new FormData(document.getElementById("register"));
                 $.ajax({
                     type: "POST",
-                    url: "user",
-                    data: JSON.stringify(user),
-                    contentType: "application/json; charset=utf-8",
+                    url: "user/register",
+                    data: registerInfo/*JSON.stringify(user)*/,
                     dataType: "json",
                     success: function (data) {
                         console.log("user added:",data);
@@ -31,12 +27,13 @@
                 });
             })
         });
-
     </script>
 </head>
 <body>
-    <input type="text" id="username" placeholder="用户名" /><br>
-    <input type="password" id="password" placeholder="密码" /><br>
-    <button id="addUser">添加用户</button><br>
+    <form id="register">
+        <input type="text" name="username" placeholder="用户名" /><br>
+        <input type="password" name="password" placeholder="密码" /><br>
+    </form>
+    <button id="registerUser">添加用户</button>
 </body>
 </html>

@@ -19,5 +19,7 @@ public class RedisClientTest {
         reply = jedis.setex("user/b", 40, "drift");
         System.out.println("reply:" + reply);
         System.out.println("user/b:" + jedis.get("user/b"));
+
+
     }
 }

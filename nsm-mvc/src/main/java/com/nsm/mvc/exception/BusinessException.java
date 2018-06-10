@@ -1,7 +1,7 @@
 package com.nsm.mvc.exception;
 
 /**
- * Created by Administrator on 2018/5/28.
+ * Created by Administrator on 2018/5/2
  */
 public class BusinessException extends RuntimeException {
     private ErrorCode errorCode;

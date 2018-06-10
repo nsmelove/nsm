@@ -38,7 +38,8 @@ public class UserController extends ErrorHandler{
         User user = new User();
         user.setUserId(userId);
         user.setUsername(username);
-        user.setPassword(password);
+        String enocdePwd = Hashing.md5().hashString(password).toString();
+        user.setPassword(enocdePwd);
         userDao.addUser(user);
         return userId;
     }
