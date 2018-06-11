@@ -8,6 +8,8 @@ import com.nsm.mvc.dao.UserDao;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.service.AuthService;
+import com.nsm.mvc.service.UserService;
+import com.nsm.mvc.view.UserInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +21,10 @@ import javax.annotation.Resource;
 @RestControllerAdvice
 @RequestMapping("/user")
 public class UserController extends ErrorHandler{
-   @Resource
-    private UserDao userDao;
     @Resource
     private AuthService authService;
+    @Resource
+    private UserService userService;
 
     /***
      * 注册用户
@@ -32,15 +34,8 @@ public class UserController extends ErrorHandler{
      */
     @RequestMapping(value = "/register")
     @ResponseBody
-    public long register(@RequestParam String username, @RequestParam String password){
-
-        long userId = IdUtils.nextLong();
-        User user = new User();
-        user.setUserId(userId);
-        user.setUsername(username);
-        user.setPassword(password);
-        userDao.addUser(user);
-        return userId;
+    public long register(@RequestParam String username, @RequestParam String nickname, @RequestParam String password){
+        return userService.register(username, nickname, password);
     }
 
     /**
@@ -52,20 +47,7 @@ public class UserController extends ErrorHandler{
     @RequestMapping("/login")
     @ResponseBody
     public User login(@RequestParam String username, @RequestParam String password, @RequestAttribute String sid){
-        User user = userDao.getUserByUsername(username);
-        if(user == null) {
-            throw new BusinessException(ErrorCode.USER_PASSWORD_WRONG);
-        }
-        String hashKey = user.getUserId() + password;
-        if(Hashing.md5().hashString(hashKey).toString().equals(user.getPassword())){
-            Session session =authService.newSession(sid, user.getUserId());
-            if(session == null) {
-                throw new BusinessException(new ErrorCode(500,"登陆失败"));
-            }
-            return user;
-        }else {
-            throw new BusinessException(ErrorCode.USER_PASSWORD_WRONG);
-        }
+        return userService.login(username, password, sid);
     }
 
     /**
@@ -86,27 +68,30 @@ public class UserController extends ErrorHandler{
      */
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public User current(@RequestAttribute long uid){
-        User user = userDao.getUser(uid);
-        if(user == null) {
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.UNAUTHORIZED));
+    public UserInfo current(@RequestAttribute long uid){
+        if(uid == 0) {
+            throw new BusinessException(ErrorCode.NO_LOGIN);
         }
-        return user;
+        UserInfo userInfo = userService.getUserInfo(uid);
+        if(userInfo == null) {
+            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+        }
+        return userInfo;
     }
 
     /**
      * 获取用户信息
-     * @param id 用户Id
+     * @param uid 用户Id
      * @return 用户信息
      */
-    @RequestMapping("/{id}")
+    @RequestMapping("/{uid}")
     @ResponseBody
-    public User user(@PathVariable long id){
-        User user = userDao.getUser(id);
-        if(user == null) {
+    public UserInfo user(@PathVariable long uid){
+        UserInfo userInfo = userService.getUserInfo(uid);
+        if(userInfo == null) {
             throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
         }
-        return user;
+        return userInfo;
     }
 
 }

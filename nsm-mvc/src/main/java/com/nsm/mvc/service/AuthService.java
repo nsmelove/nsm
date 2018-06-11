@@ -20,12 +20,14 @@ public class AuthService {
      * 新建会话
      * @param sid 会话Id
      * @param uid 用户Id
+     * @param utp 用户类型 {@link com.nsm.mvc.bean.User.UserType}
      * @return 会话
      */
-    public Session newSession(String sid, long uid){
+    public Session newSession(String sid, long uid, int utp){
         Session session = new Session();
         session.setSessionId(sid);
         session.setUserId(uid);
+        session.setUserType(utp);
         String jsonSession = JsonUtils.toJson(session);
         if(jsonSession != null) {
             try {
