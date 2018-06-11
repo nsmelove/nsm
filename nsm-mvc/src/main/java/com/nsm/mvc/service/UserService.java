@@ -1,7 +1,6 @@
 package com.nsm.mvc.service;
 
 import com.google.common.hash.Hashing;
-import com.nsm.common.memcache.MemcachedUtil;
 import com.nsm.common.utils.IdUtils;
 import com.nsm.mvc.bean.Session;
 import com.nsm.mvc.bean.User;
@@ -10,7 +9,6 @@ import com.nsm.mvc.dao.UserDao;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.view.UserInfo;
-import net.rubyeye.xmemcached.MemcachedClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -92,9 +90,11 @@ public class UserService {
         if(!unCacheIds.isEmpty()) {
             List<User> users = userDao.getUsersByIds(unCacheIds);
             for(User user : users) {
-                UserInfo userInfo = UserInfo.fromUser(user);
-                userInfoCache.setUserInfo(userInfo);
-                userInfoMap.put(userInfo.getUserId(),userInfo);
+                if(user.getUserStatus() != User.UserStatus.FORBIDDEN.ordinal()) {
+                    UserInfo userInfo = UserInfo.fromUser(user);
+                    userInfoCache.setUserInfo(userInfo);
+                    userInfoMap.put(userInfo.getUserId(),userInfo);
+                }
             }
         }
         return userInfoMap;

@@ -26,11 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by nieshuming on 2018/6/8
+ * Description for this file
+ *
+ * @author Created by nsm on 2018/6/11.
  */
 @RestControllerAdvice
-@RequestMapping("/file")
-public class FileController  extends ErrorHandler{
+@RequestMapping
+public class FileController extends ErrorHandler{
     private Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @RequestMapping(value = "/upload")

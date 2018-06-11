@@ -1,10 +1,11 @@
 package com.nsm.mvc.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Created by Administrator on 2018/5/27.
+ * Description for this file
+ *
+ * @author Created by nsm on 2018/6/11.
  */
 public class User {
 
@@ -25,8 +26,9 @@ public class User {
     }
 
     public enum UserType{
-        NORMAL, ADMIN
+        NORMAL, ADMIN, SUPER_ADMIN
     }
+
     public enum UserStatus{
         NORMAL, FORBIDDEN
     }

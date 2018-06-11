@@ -1,10 +1,6 @@
 package com.nsm.mvc.controller;
 
-import com.google.common.hash.Hashing;
-import com.nsm.common.utils.IdUtils;
-import com.nsm.mvc.bean.Session;
 import com.nsm.mvc.bean.User;
-import com.nsm.mvc.dao.UserDao;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.service.AuthService;
@@ -16,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * Created by Administrator on 2018/5/27.
+ * Description for this file
+ *
+ * @author Created by nsm on 2018/6/11.
  */
 @RestControllerAdvice
 @RequestMapping("/user")

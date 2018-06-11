@@ -3,7 +3,9 @@ package com.nsm.mvc.bean;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Created by Administrator on 2018/6/2
+ * Description for this file
+ *
+ * @author Created by nsm on 2018/6/11.
  */
 public class Session {
     private String sessionId;

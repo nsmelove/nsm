@@ -1,18 +1,23 @@
 package com.nsm.mvc.config;
 
 /**
- * Created by nieshuming on 2018/6/11.
+ * Created by nieshuming on 2018/6/11
  */
 public class SystemConfig {
+
+    /**
+     * 是否为集群模式的服务
+     */
+    public boolean clusterMode = false;
     /**
      * 系统用户上限
      */
     public static final long userLimit = Long.MAX_VALUE;
 
     /**
-     * 用户好友上限
+     * 用户联系人上限
      */
-    public static final int userFriendLimit = 500;
+    public static final int userContactLimit = 500;
 
     /**
      * 用户能创建的群组上限
