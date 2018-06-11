@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class Session {
     private String sessionId;
     private long userId;
+    private int userType;
 
     public String getSessionId() {
         return sessionId;
@@ -23,6 +24,14 @@ public class Session {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
 
     @Override

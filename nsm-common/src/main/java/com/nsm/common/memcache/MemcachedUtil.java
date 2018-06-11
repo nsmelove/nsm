@@ -44,7 +44,7 @@ public class MemcachedUtil {
                 }
                 XMemcachedClientBuilder builder = new XMemcachedClientBuilder(addressMap);
                 builder.setConnectTimeout(config.connectTimeout);
-                //builder.setCommandFactory(new BinaryCommandFactory());
+                builder.setOpTimeout(config.operatorTimeout);
                 try {
                     return builder.build();
                 } catch (Exception e) {

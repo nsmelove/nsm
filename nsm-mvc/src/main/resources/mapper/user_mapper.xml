@@ -4,40 +4,111 @@
     <insert id="addUser" parameterType="com.nsm.mvc.bean.User">
         insert into User(
           userId,
+          userType,
           username,
-          password
+          nickname,
+          userIcon,
+          password,
+          userStatus,
+          createTime
         )values (
           #{userId},
+          #{userType},
           #{username},
-          #{password}
+          #{nickname},
+          #{userIcon},
+          #{password},
+          #{userStatus},
+          #{createTime}
         )
     </insert>
 
     <select id="getUser" resultType="com.nsm.mvc.bean.User">
         SELECT
           userId,
+          userType,
           username,
-          password
+          nickname,
+          userIcon,
+          password,
+          userStatus,
+          createTime
         from User
         where userId = #{uid}
     </select>
 
     <select id="getUserByUsername" resultType="com.nsm.mvc.bean.User">
         SELECT
-        userId,
-        username,
-        password
+          userId,
+          userType,
+          username,
+          nickname,
+          userIcon,
+          password,
+          userStatus,
+          createTime
         from User
         where username = #{username}
     </select>
 
+    <select id="getUsersByIds" resultType="com.nsm.mvc.bean.User">
+        SELECT
+          userId,
+          userType,
+          username,
+          nickname,
+          userIcon,
+          password,
+          userStatus,
+          createTime
+        from User
+        where userId in
+        <foreach collection="uids" item="uid" open="(" close=")" separator=",">
+            #{uid}
+        </foreach>
+    </select>
+
     <select id="getUsers" resultType="com.nsm.mvc.bean.User">
         SELECT
-            userId,
-            username,
-            password
+          userId,
+          userType,
+          username,
+          nickname,
+          userIcon,
+          password,
+          userStatus,
+          createTime
         from User
         order by userId
         limit #{offset},#{limit}
     </select>
+
+    <update id="updateUser" parameterType="com.nsm.mvc.bean.User">
+        update User
+        <set>
+            <if test="userType >= 0">
+                userType = #{userType},
+            </if>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="userIcon != null">
+                userIcon = #{userIcon},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="userStatus >= 0">
+                userStatus = #{userStatus},
+            </if>
+        </set>
+        where userId = #{userId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from User where userId = #{uid}
+    </delete>
 </mapper>

@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 public class ErrorCode {
 
     public static final ErrorCode USER_PASSWORD_WRONG = new ErrorCode(1000, "用户名或密码错误");
-
+    public static final ErrorCode USER_FORBIDDEN = new ErrorCode(1001, "用户禁止访问");
+    public static final ErrorCode NO_LOGIN = new ErrorCode(1001, "没有登录");
+    public static final ErrorCode NO_AUTHENTICATION = new ErrorCode(1002, "没有权限");
     private int code;
     private String msg;
     public ErrorCode(int code, String msg){

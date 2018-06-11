@@ -9,6 +9,8 @@ public final class MemcachedConfig{
 
     public List<String> servers;
 
-    public long connectTimeout;
+    public long connectTimeout = 3000;
+
+    public long operatorTimeout = 1000;
 
 }
