@@ -2,6 +2,8 @@ package com.nsm.common.Hash;
 
 import com.google.common.hash.Hashing;
 
+import java.nio.charset.Charset;
+
 /**
  * Created by nsm on 2018/6/3.
  */

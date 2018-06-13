@@ -1,0 +1,9 @@
+#elasticSearch客户端配置
+
+#集群名称
+clusterName: datacenter
+#集群节点
+clusterNodes:
+  - 192.168.9.18:9300
+  - 192.168.0.16:9300
+  - 192.168.0.94:9300

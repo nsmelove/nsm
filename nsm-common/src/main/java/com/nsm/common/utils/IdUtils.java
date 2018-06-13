@@ -2,6 +2,7 @@ package com.nsm.common.utils;
 
 import com.google.common.hash.Hashing;
 
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class IdUtils {
     }
 
     public static String nextString32(){
-        return Hashing.md5().hashString(UUID.randomUUID().toString()).toString();
+        return Hashing.md5().hashString(UUID.randomUUID().toString(), Charset.defaultCharset()).toString();
     }
 
     public static void main(String[] args) {

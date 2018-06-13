@@ -3,5 +3,6 @@ dependencies {
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
     compile group: 'net.oschina.zcx7878', name: 'fastdfs-client-java', version: '1.27.0.0'
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.2.2'
-    //compile 'com.qiniu:qiniu-java-sdk:7.2.0'
+    compile group: 'org.elasticsearch.client', name: 'transport', version: '6.2.4'
+    compile 'com.qiniu:qiniu-java-sdk:7.2.0'
 }
