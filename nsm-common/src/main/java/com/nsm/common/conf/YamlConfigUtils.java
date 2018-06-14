@@ -38,20 +38,20 @@ public class YamlConfigUtils {
 
     /**
      * load config
-     * @param path config path
+     * @param name config path
      * @param type class type of config
      * @param <T> instance of config
      * @return config
      */
-    public static <T> T loadConfig(String path, Class<T> type) {
+    public static <T> T loadConfig(String name, Class<T> type) {
         PropertyUtils propertyUtils = new PropertyUtils();
         propertyUtils.setSkipMissingProperties(true);
         Constructor constructor = new Constructor();
         constructor.setPropertyUtils(propertyUtils);
         Yaml yaml = new Yaml(constructor);
-        InputStream in = YamlConfigUtils.class.getClassLoader().getResourceAsStream(path);
+        InputStream in = YamlConfigUtils.class.getClassLoader().getResourceAsStream(name);
         if(in == null) {
-            throw new NullPointerException("resource '" + path + "' not find !");
+            throw new NullPointerException("resource '" + name + "' not find !");
         }
         return yaml.loadAs(in, type);
     }

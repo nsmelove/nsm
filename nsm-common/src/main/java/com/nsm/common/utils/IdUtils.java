@@ -15,8 +15,8 @@ public class IdUtils {
     private static AtomicLong atomicLong = new AtomicLong();
 
     public static long nextLong(){
-        long id = System.nanoTime() * 100 + atomicLong.incrementAndGet();
-        if (atomicLong.longValue() > 99) {
+        long id = System.currentTimeMillis() * 1000 + atomicLong.incrementAndGet();
+        if (atomicLong.longValue() > 999) {
             atomicLong.set(0);
         }
         return id;
