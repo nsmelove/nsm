@@ -84,8 +84,8 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.10" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />
-    <orderEntry type="library" name="Gradle: org.mongodb:mongo-java-driver:3.2.2" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Gradle: commons-collections:commons-collections:3.2.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.mongodb:mongo-java-driver:3.5.0" level="project" />
   </component>
 </module>
