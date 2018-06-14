@@ -1,6 +1,7 @@
 package com.nsm.mvc.bean;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.data.annotation.Id;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  */
 public class UserGroup {
 
+    @Id
     private long groupId;
 
     private long creatorId;
@@ -23,12 +25,13 @@ public class UserGroup {
      */
     boolean silent;
 
-    private List<UserGroup> subGroups;
+    private long parGroupId;
 
-    private List<Long> memberIds;
+    private List<Long> subGroupIds;
+
+    private List<GroupMember> members;
 
     private long createTime;
-
 
     public enum GroupPrivacy{
         OPEN,//公开小组
@@ -76,20 +79,28 @@ public class UserGroup {
         this.silent = silent;
     }
 
-    public List<UserGroup> getSubGroups() {
-        return subGroups;
+    public long getParGroupId() {
+        return parGroupId;
     }
 
-    public void setSubGroups(List<UserGroup> subGroups) {
-        this.subGroups = subGroups;
+    public void setParGroupId(long parGroupId) {
+        this.parGroupId = parGroupId;
     }
 
-    public List<Long> getMemberIds() {
-        return memberIds;
+    public List<Long> getSubGroupIds() {
+        return subGroupIds;
     }
 
-    public void setMemberIds(List<Long> memberIds) {
-        this.memberIds = memberIds;
+    public void setSubGroupIds(List<Long> subGroupIds) {
+        this.subGroupIds = subGroupIds;
+    }
+
+    public List<GroupMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<GroupMember> members) {
+        this.members = members;
     }
 
     public long getCreateTime() {

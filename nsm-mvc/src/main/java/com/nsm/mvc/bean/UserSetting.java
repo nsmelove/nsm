@@ -1,5 +1,7 @@
 package com.nsm.mvc.bean;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * Description for this file
  *
@@ -17,4 +19,8 @@ public class UserSetting {
         PRIVATE//自己才能看到
     }
 
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.nsm.common.conf.YamlConfigUtils;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,17 +16,23 @@ import java.util.List;
  */
 public class MongodbUtil {
 
+    public static MongoTemplate getTemplate(){
+        return ClientHolder.template;
+    }
+
     public static MongoDatabase getDataBase(){
         return getClient().getDatabase(ClientHolder.config.dbname);
     }
+
     public static MongoClient getClient(){
         return ClientHolder.client;
     }
 
+
     private static class ClientHolder{
         static MongodbConfig config = YamlConfigUtils.loadConfig("mongodb.yaml", MongodbConfig.class);
         static MongoClient client = getClient();
-
+        static MongoTemplate template = new MongoTemplate(client, config.dbname);
         private static MongoClient getClient(){
             List<ServerAddress> addrs = new ArrayList<ServerAddress>();
             for(String server : config.servers){
