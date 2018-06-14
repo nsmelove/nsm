@@ -1,3 +1,5 @@
 rootProject.name = 'nsm'
 include 'nsm-common'
 include 'nsm-mvc'
+include 'nsm-boot'
+

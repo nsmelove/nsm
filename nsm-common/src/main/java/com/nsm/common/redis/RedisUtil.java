@@ -3,11 +3,10 @@ package com.nsm.common.redis;
 import com.nsm.common.conf.YamlConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,7 +16,11 @@ public class RedisUtil {
     private static final Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 
     public static Jedis geJedis(){
-        return JedisHolder.jedis;
+        return JedisPoolHolder.jedisPool.getResource();
+    }
+
+    public static Jedis geSentinelJedis(){
+        return JedisSentinelPoolHolder.sentinelPool.getResource();
     }
 
     public static JedisCluster getJedisCluster(){
@@ -28,20 +31,22 @@ public class RedisUtil {
         private static RedisConfig config = YamlConfigUtils.loadConfig("redis.yaml", RedisConfig.class);
     }
 
-    private static class JedisHolder{
-        private static Jedis jedis = initJedis();
-        private static Jedis initJedis(){
+    private static class JedisPoolHolder{
+        private static JedisPool jedisPool = initPool();
+        private static JedisPool initPool(){
             String server = ConfigHolder.config.server;
-            if(server == null) {
-                throw new IllegalArgumentException("no server config find");
-            }
-            int spIdx = server.lastIndexOf(":");
-            if(spIdx == -1) {
-                throw new IllegalArgumentException("host address '"+ server + "'illegal");
-            }
-            String hostPart = server.substring(0, spIdx).trim();
-            int portNum = Integer.valueOf(server.substring(spIdx + 1).trim());
-            return new Jedis(hostPart, portNum);
+            HostAndPort hostAndPort = HostAndPort.parseString(server);
+            return new JedisPool(hostAndPort.getHost(), hostAndPort.getPort());
+        }
+
+    }
+
+    private static class JedisSentinelPoolHolder{
+        private static JedisSentinelPool sentinelPool = initPool();
+        private static JedisSentinelPool initPool(){
+            String masterName = ConfigHolder.config.masterName;
+            Set<String> sentinels = ConfigHolder.config.sentinels;
+            return new JedisSentinelPool(masterName, sentinels);
         }
 
     }
@@ -54,13 +59,7 @@ public class RedisUtil {
                 throw new IllegalArgumentException("no servers config find");
             }
             for(String server : ConfigHolder.config.servers) {
-                int spIdx = server.lastIndexOf(":");
-                if(spIdx == -1) {
-                    throw new IllegalArgumentException("host address '"+ server + "'illegal");
-                }
-                String hostPart = server.substring(0, spIdx).trim();
-                int portNum = Integer.valueOf(server.substring(spIdx + 1).trim());
-                HostAndPort hostAndPort = new HostAndPort(hostPart,portNum);
+                HostAndPort hostAndPort = HostAndPort.parseString(server);
                 jedisClusterNodes.add(hostAndPort);
             }
             return new JedisCluster(jedisClusterNodes);

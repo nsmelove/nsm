@@ -20,7 +20,6 @@ subprojects{
     sourceCompatibility = 1.8
     dependencies {
         compile group: 'org.yaml', name: 'snakeyaml', version: '1.17'
-        //compile 'log4j:log4j:1.2.17'
         compile 'org.slf4j:slf4j-api:1.7.5'
         compile 'org.slf4j:slf4j-log4j12:1.7.5'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.7.0'
@@ -44,8 +43,12 @@ subprojects{
 
     task "create-dirs" << {
         sourceSets*.java.srcDirs*.each {it.mkdirs()}
-        sourceSets*.test.srcDirs*.each {it.mkdirs()}
         sourceSets*.resources.srcDirs*.each {it.mkdirs()}
+
+//        sourceSets.main.java.srcDirs*.each {it.mkdirs()}
+//        sourceSets.main.resources.srcDirs*.each {it.mkdirs()}
+//        sourceSets.test.java.srcDirs*.each {it.mkdirs()}
+//        sourceSets.test.resources.srcDirs*.each {it.mkdirs()}
     }
 //    javadoc {
 //        options {
