@@ -3,6 +3,7 @@ package com.nsm.mvc.bean;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,8 +29,6 @@ public class UserGroup {
     private long parGroupId;
 
     private List<Long> subGroupIds;
-
-    private List<GroupMember> members;
 
     private long createTime;
 
@@ -93,14 +92,6 @@ public class UserGroup {
 
     public void setSubGroupIds(List<Long> subGroupIds) {
         this.subGroupIds = subGroupIds;
-    }
-
-    public List<GroupMember> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<GroupMember> members) {
-        this.members = members;
     }
 
     public long getCreateTime() {

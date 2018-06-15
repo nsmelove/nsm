@@ -1,19 +1,35 @@
 package com.nsm.mvc.dao;
 
 import com.google.common.collect.Lists;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import com.nsm.common.mongodb.MongodbUtil;
 import com.nsm.common.utils.IdUtils;
 import com.nsm.mvc.bean.GroupMember;
 import com.nsm.mvc.bean.UserGroup;
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
+import org.bson.BsonInt32;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 /**
  * Description for this file
@@ -26,49 +42,66 @@ public class UserGroupDao {
 
     private MongoTemplate template = MongodbUtil.getTemplate();
 
-    private void createIndex(){
-
-    }
 
     public void addUserGroup(UserGroup group){
         template.insert(group);
     }
 
-    public void addGroupMember(long groupId, GroupMember member){
-        Query query = Query.query(Criteria.where("groupId").is(groupId));
-        Update update = new Update().addToSet("members", member);
-        template.updateFirst(query, update, UserGroup.class);
-    }
 
     public UserGroup getUserGroup(long groupId){
         return template.findById(groupId, UserGroup.class);
-
     }
 
-    public List<UserGroup> getAllUserGroup(int offset, int limit){
+    public List<UserGroup> getUserGroups(int offset, int limit){
         Query query = new Query().skip(offset).limit(limit);
         return template.find(query, UserGroup.class);
     }
 
+    public List<UserGroup> getUserGroups(long userId, int offset, int limit){
+        Query query = new Query(Criteria.where("memberId").is(userId)).skip(offset).limit(limit);
+        return template.find(query, UserGroup.class);
+    }
 
+    public void updateUserGroup(long groupId, String groupName, Integer privacy, Boolean silent, List<Long> addSubGIds, List<Long> delSubGIds) {
 
+    }
+    public void addGroupMember(GroupMember member){
+        template.save(member);
+    }
+
+    public List<GroupMember> getGroupMembers(long groupId, int offset, int limit) {
+        Query query = Query.query(Criteria.where("groupId").is(groupId)).skip(offset).limit(limit);
+        return  template.find(query, GroupMember.class);
+    }
+
+    private void initTestData(){
+        long groupBegin = 1000000000000000L;
+        long userBegin =  1000000000000000L;
+        for(int i = 0 ; i < 1000; i++) {
+            UserGroup group = new UserGroup();
+            long groupId = groupBegin + i;
+//            group.setGroupId(groupId);
+//            group.setGroupName("群组" + i);
+//            group.setCreatorId(groupId);
+//            group.setCreateTime(System.currentTimeMillis());
+//            addUserGroup(group);
+//            System.out.println("add group:" + groupId);
+            for(int j = 0; j< 500; j++) {
+                GroupMember member = new GroupMember();
+                member.setGroupId(groupId);
+                member.setMemberId(userBegin + i+ j);
+                member.setAdmin(j == 0);
+                member.setJoinTime(System.currentTimeMillis());
+                addGroupMember(member);
+            }
+            System.out.println("add 500 groupMember");
+        }
+
+    }
     public static void main(String[] args) {
-
-        long userId =  1511275247177296L;
-        long groupId = 1528990217785001L;
         UserGroupDao dao = new UserGroupDao();
-        UserGroup group = new UserGroup();
-        group.setGroupId(IdUtils.nextLong());
-        group.setGroupName("学习组");
-        group.setCreatorId(userId);
-        group.setCreateTime(System.currentTimeMillis());
-        GroupMember member = new GroupMember();
-        member.setMemberId(userId);
-        member.setAdmin(true);
-        member.setJoinTime(System.currentTimeMillis());
-        group.setMembers(Lists.newArrayList(member));
-        dao.addUserGroup(group);
-        dao.getAllUserGroup(0, 10).forEach(System.out::println);
+        //dao.initTestData();
+        dao.getGroupMembers(1000000000000000L,5,10).forEach(System.out::println);
 
     }
 

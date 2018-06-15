@@ -10,15 +10,25 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class GroupMember {
 
-    long memberId;
+    private long groupId;
 
-    boolean isAdmin;
+    private long memberId;
+
+    private boolean isAdmin;
     /**
      * 是否被禁言
      */
-    boolean silent;
+    private boolean silent;
 
     private long joinTime;
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
 
     public long getMemberId() {
         return memberId;
