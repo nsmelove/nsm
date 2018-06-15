@@ -1,6 +1,7 @@
 package com.nsm.mvc.bean;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 产品属性
@@ -23,6 +24,6 @@ public class ProductProperty {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

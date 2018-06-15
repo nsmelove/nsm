@@ -1,0 +1,7 @@
+#mongodb配置
+
+#mongodb服务器地址配置
+servers:
+  - localhost:27017
+
+dbname: nsm
