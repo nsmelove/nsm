@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.googlecode.xmemcached:xmemcached:2.0.0">
+    <CLASSES>
+      <root url="jar://E:/gradle_repo/caches/modules-2/files-2.1/com.googlecode.xmemcached/xmemcached/2.0.0/ea40216a659cf5c6df82e03af906afab08e26257/xmemcached-2.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://E:/gradle_repo/caches/modules-2/files-2.1/com.googlecode.xmemcached/xmemcached/2.0.0/43db1ed4d797df9f556375ab999e0345cd7582b5/xmemcached-2.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

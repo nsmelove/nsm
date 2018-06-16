@@ -1,35 +1,16 @@
 package com.nsm.mvc.dao;
 
-import com.google.common.collect.Lists;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
 import com.nsm.common.mongodb.MongodbUtil;
-import com.nsm.common.utils.IdUtils;
 import com.nsm.mvc.bean.GroupMember;
 import com.nsm.mvc.bean.UserGroup;
-import org.bson.BsonArray;
-import org.bson.BsonDocument;
-import org.bson.BsonInt32;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.Fields;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 /**
  * Description for this file
@@ -100,7 +81,7 @@ public class UserGroupDao {
     }
     public static void main(String[] args) {
         UserGroupDao dao = new UserGroupDao();
-        //dao.initTestData();
+        dao.initTestData();
         dao.getGroupMembers(1000000000000000L,5,10).forEach(System.out::println);
 
     }
