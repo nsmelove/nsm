@@ -12,6 +12,9 @@ public class ErrorCode {
     public static final ErrorCode USER_FORBIDDEN = new ErrorCode(1001, "用户禁止访问");
     public static final ErrorCode NO_LOGIN = new ErrorCode(1001, "没有登录");
     public static final ErrorCode NO_AUTHENTICATION = new ErrorCode(1002, "没有权限");
+
+    public static final ErrorCode USER_GROUP_LIMIT = new ErrorCode(1100, "用户群组达到上限");
+    public static final ErrorCode USER_GROUP_LEVEL_LIMIT = new ErrorCode(1100, "用户群组层级达到上限");
     private int code;
     private String msg;
     public ErrorCode(int code, String msg){

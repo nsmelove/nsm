@@ -3,7 +3,6 @@ package com.nsm.mvc.bean;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,6 +14,8 @@ public class UserGroup {
 
     @Id
     private long groupId;
+
+    private short groupLevel;
 
     private long creatorId;
 
@@ -38,12 +39,28 @@ public class UserGroup {
         PRIVATE//私有小组
     }
 
+    public static class Update{
+        public String groupName;
+        public Integer privacy;
+        public Boolean silent;
+        public List<Long> addSubGIds;
+        public List<Long> delSubGIds;
+
+    }
     public long getGroupId() {
         return groupId;
     }
 
     public void setGroupId(long groupId) {
         this.groupId = groupId;
+    }
+
+    public short getGroupLevel() {
+        return groupLevel;
+    }
+
+    public void setGroupLevel(short groupLevel) {
+        this.groupLevel = groupLevel;
     }
 
     public long getCreatorId() {
