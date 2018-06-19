@@ -2,3 +2,6 @@
 /nsm-mvc/build
 /.idea
 /.gradle
+/nsm-mvc/*.iml
+/nsm-common/*.iml
+/nsm-boot/*.iml
