@@ -6,7 +6,7 @@
         userId,
         autoJoinGroup
       )values(
-        #{userId}
+        #{userId},
         #{autoJoinGroup}
       )
     </insert>
@@ -19,7 +19,7 @@
         where userId = #{userId}
     </select>
 
-    <update id="updateUserSetting" parameterType="com.nsm.mvc.bean.UserSetting.Update">
+    <update id="updateUserSetting" parameterType="com.nsm.mvc.bean.UserSetting$Update">
       update user_setting
       <set>
           <if test="autoJoinGroup != null">
@@ -30,6 +30,6 @@
     </update>
 
     <delete id="deleteUserSetting">
-        delete from user_setting where userId =#{userId}
+        delete from user_setting where userId = #{userId}
     </delete>
 </mapper>

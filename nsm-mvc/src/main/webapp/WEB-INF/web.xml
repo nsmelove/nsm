@@ -24,6 +24,10 @@
     <filter>
         <filter-name>authFilter</filter-name>
         <filter-class>com.nsm.mvc.filter.AuthFilter</filter-class>
+        <init-param>
+            <param-name>configFile</param-name>
+            <param-value>authConfig.yaml</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>authFilter</filter-name>

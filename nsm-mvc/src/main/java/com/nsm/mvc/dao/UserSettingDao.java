@@ -1,6 +1,7 @@
 package com.nsm.mvc.dao;
 
 import com.nsm.mvc.bean.UserSetting;
+
 import org.springframework.stereotype.Repository;
 
 /**

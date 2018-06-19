@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 /**
- * Created by Administrator on 2018/5/27.
+ * Created by nsm on 2018/5/27
  */
 public class ErrorHandler {
     private Logger logger = LoggerFactory.getLogger(ErrorHandler.class);

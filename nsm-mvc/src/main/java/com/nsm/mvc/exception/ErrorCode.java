@@ -9,9 +9,10 @@ import org.springframework.http.HttpStatus;
 public class ErrorCode {
 
     public static final ErrorCode USER_PASSWORD_WRONG = new ErrorCode(1000, "用户名或密码错误");
-    public static final ErrorCode USER_FORBIDDEN = new ErrorCode(1001, "用户禁止访问");
-    public static final ErrorCode NO_LOGIN = new ErrorCode(1001, "没有登录");
-    public static final ErrorCode NO_AUTHENTICATION = new ErrorCode(1002, "没有权限");
+    public static final ErrorCode USER_EXIST = new ErrorCode(1001, "用户名已存在");
+    public static final ErrorCode USER_FORBIDDEN = new ErrorCode(1002, "用户禁止访问");
+    public static final ErrorCode NO_LOGIN = new ErrorCode(1003, "没有登录");
+    public static final ErrorCode NO_AUTHENTICATION = new ErrorCode(1004, "没有权限");
 
     public static final ErrorCode USER_GROUP_LIMIT = new ErrorCode(1100, "用户群组达到上限");
     public static final ErrorCode USER_GROUP_LEVEL_LIMIT = new ErrorCode(1101, "用户群组层级达到上限");

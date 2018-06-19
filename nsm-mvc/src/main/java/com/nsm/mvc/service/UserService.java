@@ -48,6 +48,9 @@ public class UserService {
      * @return 用户Id
      */
     public long register(String username, String nickname, String password){
+        if(userDao.getUserByUsername(username) != null) {
+            throw new BusinessException(ErrorCode.USER_EXIST);
+        }
         long userId = IdUtils.nextLong();
         User user = new User();
         user.setUserId(userId);
