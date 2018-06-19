@@ -18,6 +18,17 @@ public class User {
     private String password;
     private int userStatus;
     private long createTime;
+    private int privacy;
+
+    public enum UserPrivacy{
+        PUBLIC,//所以人都能看到
+        CONTACT,//联系人才能看到
+        PRIVATE//自己才能看到
+    }
+
+    public static class Update{
+        Integer privacy;
+    }
 
     public static User newUpdate(){
         User update = new User();
@@ -96,6 +107,14 @@ public class User {
 
     public void setCreateTime(long createTime) {
         this.createTime = createTime;
+    }
+
+    public int getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(int privacy) {
+        this.privacy = privacy;
     }
 
     @Override

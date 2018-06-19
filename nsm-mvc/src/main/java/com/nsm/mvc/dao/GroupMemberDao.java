@@ -1,8 +1,10 @@
 package com.nsm.mvc.dao;
 
 import com.google.common.collect.Lists;
+import com.mongodb.client.model.Projections;
 import com.nsm.common.mongodb.MongodbUtil;
 import com.nsm.mvc.bean.GroupMember;
+import org.bson.BsonInt32;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +12,14 @@ import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Description for this file
@@ -66,7 +70,20 @@ public class GroupMemberDao {
         return  template.find(query, GroupMember.class);
     }
 
-    public void updateGroupMember(long groupId, long memberId, Boolean isAdmin, Boolean silent){
+    public List<Long> getMemberGroupIds(long memberId, Boolean isAdmin) {
+        Criteria criteria = Criteria.where("memberId").is(memberId);
+        if(isAdmin != null) {
+            criteria = criteria.and("isAdmin").is(isAdmin);
+        }
+        //Projections.fields(Projections.include("groupId"), Projections.excludeId());
+        Document fieldsObject = new Document("groupId", 1);
+        fieldsObject.put("_id", 0);
+        Query query = new BasicQuery(criteria.getCriteriaObject(), fieldsObject);
+        List<GroupMember> members = template.find(query, GroupMember.class);
+        return members.stream().map(GroupMember::getGroupId).collect(Collectors.toList());
+    }
+
+    public GroupMember updateGroupMember(long groupId, long memberId, Boolean isAdmin, Boolean silent){
         Query query = Query.query(Criteria.where("groupId").is(groupId).and("memberId").is(memberId));
         Update update = new Update();
         if(isAdmin != null) {
@@ -75,7 +92,7 @@ public class GroupMemberDao {
         if(silent != null) {
             update.set("silent",silent);
         }
-        template.findAndModify(query,update, GroupMember.class);
+        return template.findAndModify(query,update, GroupMember.class);
 
     }
     public GroupMember deleteGroupMember(long groupId, long memberId){
@@ -86,5 +103,10 @@ public class GroupMemberDao {
     public void deleteGroupMembers(long groupId){
         Query query = Query.query(Criteria.where("groupId").is(groupId));
         template.findAndRemove(query, GroupMember.class);
+    }
+
+    public static void main(String[] args) {
+        GroupMemberDao dao = new GroupMemberDao();
+        dao.getMemberGroupIds(1000000000000011L, null).forEach(System.out::println);
     }
 }

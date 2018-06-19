@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.nsm.mvc.dao.UserDao">
     <insert id="addUser" parameterType="com.nsm.mvc.bean.User">
-        insert into User(
+        insert into user(
           userId,
           userType,
           username,
@@ -33,7 +33,7 @@
           password,
           userStatus,
           createTime
-        from User
+        from user
         where userId = #{uid}
     </select>
 
@@ -47,7 +47,7 @@
           password,
           userStatus,
           createTime
-        from User
+        from user
         where username = #{username}
     </select>
 
@@ -61,7 +61,7 @@
           password,
           userStatus,
           createTime
-        from User
+        from user
         where userId in
         <foreach collection="uids" item="uid" open="(" close=")" separator=",">
             #{uid}
@@ -78,13 +78,13 @@
           password,
           userStatus,
           createTime
-        from User
+        from user
         order by userId
         limit #{offset},#{limit}
     </select>
 
     <update id="updateUser" parameterType="com.nsm.mvc.bean.User">
-        update User
+        update user
         <set>
             <if test="userType >= 0">
                 userType = #{userType},

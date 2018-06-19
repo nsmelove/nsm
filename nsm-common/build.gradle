@@ -4,5 +4,7 @@ dependencies {
     compile group: 'net.oschina.zcx7878', name: 'fastdfs-client-java', version: '1.27.0.0'
     compile group: 'org.mongodb', name: 'mongo-java-driver', version: '3.5.0'
     compile group: 'org.springframework.data', name: 'spring-data-mongodb', version: '2.0.8.RELEASE'
-    compile group: 'org.elasticsearch.client', name: 'transport', version: '6.2.4'
+    compile('org.elasticsearch.client:transport:5.6.3'){
+        exclude group:'org.apache.logging.log4j'
+    }
 }

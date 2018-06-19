@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by nieshuming on 2018/5/31.
+ * Created by nieshuming on 2018/5/31
  */
 public class AuthFilter implements Filter{
     public static final String sessionId = "sid";

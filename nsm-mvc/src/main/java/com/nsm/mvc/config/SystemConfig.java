@@ -22,12 +22,7 @@ public class SystemConfig {
     /**
      * 用户能创建的群组上限
      */
-    public static final int userGroupLimit = 5;
-
-    /**
-     * 每个群组的子群上限
-     */
-    public static final int subGroupLimit = 50;
+    public static final int userGroupLimit = 100;
 
     /**
      * 群组能够够创建的子群层级上限
@@ -36,20 +31,20 @@ public class SystemConfig {
     /**
      * 群组成员上限
      */
-    public static final int groupMemberLimit = 200;
+    public static final int groupMemberLimit = 500;
 
     /**
      * 产品类别上限
      */
-    public static final int productCategoryLimit = 20;
+    public static final int productCategoryLimit = 200;
 
     /**
      * 产品子类别层级上限
      */
-    public static final int categoryLevelLimit = 20;
+    public static final int categoryLevelLimit = 3;
 
     /**
-     * 产品数量上限
+     * 产品种类上限
      */
     public static final int productLimit = 2000;
 }
