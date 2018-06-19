@@ -39,8 +39,20 @@ public class UserGroupService {
     @Resource
     GroupInviteDao groupInviteDao;
 
-    public List<UserGroup> getUserGroups(long userId) {
-        return userGroupDao.getUserGroups(0, userId, 0, Integer.MAX_VALUE);
+    /**
+     * 获取用户的群组
+     * @param userId 用户Id
+     * @param adminStatus 管理状态；0.不区分，1.用户创建的，2.用户是管理员（包括创建的），3.不是管理员
+     * @return
+     */
+    public List<UserGroup> getUserGroups(long userId, int adminStatus) {
+        List<UserGroup> groups = null;
+        if(adminStatus == 1) {
+            groups = userGroupDao.getUserGroups(0, userId, 0, Integer.MAX_VALUE);
+        }else {
+            //groupMemberDao.getGroupMember()
+        }
+        return groups;
     }
 
     public long createGroup(long userId, String groupName, long parentGroupId) {

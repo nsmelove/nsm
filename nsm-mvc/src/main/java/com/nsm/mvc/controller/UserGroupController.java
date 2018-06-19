@@ -21,8 +21,8 @@ public class UserGroupController extends ErrorHandler{
 
     @RequestMapping("/list")
     @ResponseBody
-    public List<UserGroup> groupList(@RequestAttribute long uid, @RequestAttribute String sid){
-        return userGroupService.getUserGroups(uid);
+    public List<UserGroup> groupList(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam(required = false) int adminStatus){
+        return userGroupService.getUserGroups(uid, adminStatus);
     }
 
     @RequestMapping("/create")
