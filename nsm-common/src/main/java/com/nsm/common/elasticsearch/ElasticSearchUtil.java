@@ -3,6 +3,7 @@ package com.nsm.common.elasticsearch;
 import com.nsm.common.conf.YamlConfigUtils;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class ElasticSearchUtil {
             for(String node : config.clusterNodes) {
                 String[] hostPort = node.split(":");
                 try {
-                    TransportAddress address = new TransportAddress(InetAddress.getByName(hostPort[0]), Integer.valueOf(hostPort[1]));
+                    TransportAddress address = new InetSocketTransportAddress(InetAddress.getByName(hostPort[0]), Integer.valueOf(hostPort[1]));
                     client.addTransportAddress(address);
                 } catch (UnknownHostException e) {
                     logger.error("unknown host for node {}", node, e);

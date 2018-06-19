@@ -9,19 +9,24 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class UserInfo {
 
-    public static UserInfo fromUser(User user) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(user.getUserId());
-        userInfo.setNickname(user.getNickname());
-        userInfo.setUserIcon(user.getUserIcon());
-        userInfo.setCreateTime(user.getCreateTime());
-        return userInfo;
-    }
-
     private long userId;
+    private int userType;
     private String nickname;
     private String userIcon;
     private Long createTime;
+    private int privacy;
+
+    public static UserInfo fromUser(User user) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(user.getUserId());
+        userInfo.setUserType(user.getUserType());
+        userInfo.setNickname(user.getNickname());
+        userInfo.setUserIcon(user.getUserIcon());
+        userInfo.setCreateTime(user.getCreateTime());
+        userInfo.setPrivacy(user.getPrivacy());
+        return userInfo;
+    }
+
     public long getUserId() {
         return userId;
     }
@@ -30,6 +35,13 @@ public class UserInfo {
         this.userId = userId;
     }
 
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
 
     public String getNickname() {
         return nickname;
@@ -53,6 +65,14 @@ public class UserInfo {
 
     public void setCreateTime(Long createTime) {
         this.createTime = createTime;
+    }
+
+    public int getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(int privacy) {
+        this.privacy = privacy;
     }
 
     @Override

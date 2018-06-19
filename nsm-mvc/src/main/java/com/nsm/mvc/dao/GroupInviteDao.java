@@ -72,7 +72,6 @@ public class GroupInviteDao {
         return  template.find(query, GroupInvite.class);
     }
 
-
     public GroupInvite deleteGroupInvite(long groupId, long inviteeId){
         Query query = Query.query(Criteria.where("groupId").is(groupId).and("inviteeId").is(inviteeId));
         return template.findAndRemove(query, GroupInvite.class);

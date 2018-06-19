@@ -1,8 +1,10 @@
 package com.nsm.mvc.dao;
 
 import com.google.common.collect.Lists;
+import com.mongodb.client.model.Projections;
 import com.nsm.common.mongodb.MongodbUtil;
 import com.nsm.mvc.bean.GroupMember;
+import org.bson.BsonInt32;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,15 +76,14 @@ public class GroupMemberDao {
             criteria = criteria.and("isAdmin").is(isAdmin);
         }
         //Projections.fields(Projections.include("groupId"), Projections.excludeId());
-        Document fieldsObject = new Document("groupId",1);
+        Document fieldsObject = new Document("groupId", 1);
         fieldsObject.put("_id", 0);
         Query query = new BasicQuery(criteria.getCriteriaObject(), fieldsObject);
         List<GroupMember> members = template.find(query, GroupMember.class);
-        System.out.println(members);
         return members.stream().map(GroupMember::getGroupId).collect(Collectors.toList());
     }
 
-    public void updateGroupMember(long groupId, long memberId, Boolean isAdmin, Boolean silent){
+    public GroupMember updateGroupMember(long groupId, long memberId, Boolean isAdmin, Boolean silent){
         Query query = Query.query(Criteria.where("groupId").is(groupId).and("memberId").is(memberId));
         Update update = new Update();
         if(isAdmin != null) {
@@ -91,7 +92,7 @@ public class GroupMemberDao {
         if(silent != null) {
             update.set("silent",silent);
         }
-        template.findAndModify(query,update, GroupMember.class);
+        return template.findAndModify(query,update, GroupMember.class);
 
     }
     public GroupMember deleteGroupMember(long groupId, long memberId){
@@ -106,6 +107,6 @@ public class GroupMemberDao {
 
     public static void main(String[] args) {
         GroupMemberDao dao = new GroupMemberDao();
-        dao.getMemberGroupIds(1000000000000011L, null).forEach(System.out::print);
+        dao.getMemberGroupIds(1000000000000011L, null).forEach(System.out::println);
     }
 }

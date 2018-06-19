@@ -10,13 +10,27 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class UserSetting {
 
     private long userId;
-    private int privacy;
     private boolean autoJoinGroup;
 
-    public enum UserPrivacy{
-        PUBLIC,//所以人都能看到
-        CONTACT,//联系人才能看到
-        PRIVATE//自己才能看到
+    public static class Update{
+        public long userId;
+        public Boolean autoJoinGroup;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public boolean isAutoJoinGroup() {
+        return autoJoinGroup;
+    }
+
+    public void setAutoJoinGroup(boolean autoJoinGroup) {
+        this.autoJoinGroup = autoJoinGroup;
     }
 
     @Override

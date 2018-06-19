@@ -4,11 +4,14 @@ import com.google.common.hash.Hashing;
 import com.nsm.common.utils.IdUtils;
 import com.nsm.mvc.bean.Session;
 import com.nsm.mvc.bean.User;
+import com.nsm.mvc.bean.UserSetting;
 import com.nsm.mvc.cache.UserInfoCache;
 import com.nsm.mvc.dao.UserDao;
+import com.nsm.mvc.dao.UserSettingDao;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.view.UserInfo;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by nieshuming on 2018/6/11.
+ * Created by nieshuming on 2018/6/11
  */
 @Service
 public class UserService {
@@ -27,6 +30,8 @@ public class UserService {
     @Resource
     private UserDao userDao;
     @Resource
+    private UserSettingDao userSettingDao;
+    @Resource
     private UserInfoCache userInfoCache;
 
     private String encodePwd(long userId, String password){
@@ -34,6 +39,14 @@ public class UserService {
         return Hashing.md5().hashString(hashKey).toString();
     }
 
+    /**
+     * 用户注册
+     *
+     * @param username
+     * @param nickname
+     * @param password
+     * @return 用户Id
+     */
     public long register(String username, String nickname, String password){
         long userId = IdUtils.nextLong();
         User user = new User();
@@ -52,7 +65,7 @@ public class UserService {
      * @param password 密码
      * @return 用户信息
      */
-    public User login(String username, String password, String sid){
+    public UserInfo login(String username, String password, String sid){
         User user = userDao.getUserByUsername(username);
         if(user == null) {
             throw new BusinessException(ErrorCode.USER_PASSWORD_WRONG);
@@ -66,9 +79,64 @@ public class UserService {
             if(session == null) {
                 throw new BusinessException(new ErrorCode(500,"登陆失败"));
             }
-            return user;
+            return UserInfo.fromUser(user);
         }else {
             throw new BusinessException(ErrorCode.USER_PASSWORD_WRONG);
+        }
+    }
+
+
+    public void rename(long userId, String name){
+        User user = userDao.getUser(userId);
+        if(user == null) {
+            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+        }
+        if(user.getUserStatus() != User.UserStatus.NORMAL.ordinal()) {
+            throw new BusinessException(ErrorCode.USER_FORBIDDEN);
+        }
+        if(!user.getNickname().equals(name)) {
+            user.setNickname(name);
+            userDao.updateUser(user);
+            userInfoCache.delUserInfo(userId);
+        }
+    }
+
+    public void changeIcon(long userId, String icon){
+        //TODO
+    }
+
+    public void changePwd(long userId, String oldPwd, String newPwd){
+        //TODO
+    }
+
+    public void changePrivacy(long userId, int privacy){
+        User user = userDao.getUser(userId);
+        if(user == null) {
+            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+        }
+        if(user.getUserStatus() != User.UserStatus.NORMAL.ordinal()) {
+            throw new BusinessException(ErrorCode.USER_FORBIDDEN);
+        }
+        if(user.getPrivacy() != privacy) {
+            user.setPrivacy(privacy);
+            userDao.updateUser(user);
+            userInfoCache.delUserInfo(userId);
+        }
+    }
+
+    public void changeSetting(UserSetting.Update update) {
+        UserSetting setting = userSettingDao.getUserSetting(update.userId);
+        if(setting != null) {
+            setting = new UserSetting();
+            setting.setUserId(update.userId);
+            setting.setAutoJoinGroup(update.autoJoinGroup);
+            userSettingDao.addUserSetting(setting);
+        }else {
+            User user = userDao.getUser(update.userId);
+            if(user == null) {
+                throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+            }
+            userSettingDao.updateUserSetting(update);
         }
     }
 
@@ -84,7 +152,7 @@ public class UserService {
         return userInfo;
     }
 
-    public Map<Long, UserInfo> getUserInfos(Collection<Long> uids){
+    public Map<Long, UserInfo> batchGetUserInfo(Collection<Long> uids){
         Map<Long, UserInfo> userInfoMap = userInfoCache.batchGetUserInfo(uids);
         List<Long> unCacheIds = uids.stream().filter(uid -> !userInfoMap.containsKey(uid)).collect(Collectors.toList());
         if(!unCacheIds.isEmpty()) {
@@ -105,7 +173,19 @@ public class UserService {
     }
 
     public List<User> getUsers(int offset, int limit){
-        List<User> users = userDao.getUsers(offset, limit);
-        return users;
+        return userDao.getUsers(offset, limit);
     }
+
+    public UserSetting getUserSetting(long userId){
+        UserSetting setting = userSettingDao.getUserSetting(userId);
+        if(setting == null) {
+            User user = userDao.getUser(userId);
+            if(user != null) {
+                setting = new UserSetting();
+                setting.setAutoJoinGroup(true);
+            }
+        }
+        return setting;
+    }
+
 }
