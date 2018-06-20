@@ -30,7 +30,7 @@ public class AuthFilter implements Filter{
     public static final String sessionId = "sid";
     public static final String userId = "uid";
     public static final String noNeedAuthUrlKey = "noNeedAuthUrl";
-    private String configFile = "authConfig.yaml";
+    public static final String defaultConfigFile = "authConfig.yaml";
     private PatternsRequestCondition patternsRequestCondition = null;
     private AuthService authService = new AuthService();
 
@@ -38,8 +38,8 @@ public class AuthFilter implements Filter{
     @SuppressWarnings("unchecked")
     public void init(FilterConfig filterConfig) throws ServletException {
         String configFile = filterConfig.getInitParameter("configFile");
-        if(StringUtils.isNoneBlank(configFile)) {
-            this.configFile = configFile;
+        if(StringUtils.isBlank(configFile)) {
+            configFile = defaultConfigFile;
         }
         try {
             Map configs = YamlConfigUtils.loadConfig(configFile, HashMap.class);
@@ -88,9 +88,9 @@ public class AuthFilter implements Filter{
 
         if(uid == 0 && patternsRequestCondition != null && !patternsRequestCondition.isEmpty()){
             if(patternsRequestCondition.getMatchingCondition(httpRequest) == null){
-                String resMsg = JsonUtils.toJson(ErrorCode.NO_LOGIN);
                 httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
                 httpResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+                String resMsg = JsonUtils.toJson(ErrorCode.NO_LOGIN);
                 if(resMsg != null) {
                     ServletOutputStream out = httpResponse.getOutputStream();
                     out.write(resMsg.getBytes("utf-8"));
@@ -102,7 +102,6 @@ public class AuthFilter implements Filter{
         chain.doFilter(request, response);
     }
 
-
     private long getUid(String sid) {
         Session session = authService.getSession(sid);
         if(session != null) {
@@ -111,7 +110,6 @@ public class AuthFilter implements Filter{
             return 0;
         }
     }
-
 
     @Override
     public void destroy() {

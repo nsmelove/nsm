@@ -11,9 +11,14 @@ public class MemcachedTest {
 
         MemcachedClient client = MemcachedUtil.getMemClient();
         try {
-            boolean result = client.set("user/a",40, "nsm1");
+            boolean result = client.set("user/a",4, "nsm2");
             System.out.println("result:" + result);
-            System.out.println("user/a:" + client.get("user/a"));
+            client.incr("a",1,0,3000,4);
+            while (true){
+                System.out.println("user/a:" + client.get("user/a"));
+                System.out.println("a:" + client.get("a"));
+                Thread.sleep(500);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -14,7 +14,14 @@ public class UserSetting {
 
     public static class Update{
         public long userId;
+        public Update(long userId) {
+            this.userId = userId;
+        }
         public Boolean autoJoinGroup;
+
+        public boolean existUpdate(){
+            return autoJoinGroup != null;
+        }
     }
 
     public long getUserId() {

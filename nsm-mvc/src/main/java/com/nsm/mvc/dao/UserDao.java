@@ -17,13 +17,15 @@ public interface UserDao {
 
     User getUser(long uid);
 
+    long countUser();
+
     User getUserByUsername(String username);
 
     List<User> getUsersByIds(@Param("uids") Collection<Long> uids);
 
     List<User> getUsers(@Param("offset") int offset, @Param("limit")int limit);
 
-    void updateUser(User update);
+    void updateUser(User.Update update);
 
     void deleteUser(long uid);
 }

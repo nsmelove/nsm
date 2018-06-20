@@ -8,6 +8,7 @@ import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.service.AuthService;
 import com.nsm.mvc.service.UserService;
+import com.nsm.mvc.view.UserInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -28,7 +29,7 @@ public class AdminController extends ErrorHandler{
 
     /**
      * 用户列表
-     * @param sid
+     * @param uid
      * @param offset
      * @param limit
      * @param userType
@@ -37,14 +38,11 @@ public class AdminController extends ErrorHandler{
      */
     @RequestMapping("/user/list")
     @ResponseBody
-    public List<User> userList(@RequestAttribute String sid,
+    public List<User> userList(@RequestAttribute long uid,
                             @RequestParam(required = false) int offset, @RequestParam(required = false) int limit,
                             @RequestParam(required = false) int userType, @RequestParam(required = false) int status){
-        Session session = authService.getSession(sid);
-        if(session == null) {
-            throw new BusinessException(ErrorCode.NO_LOGIN);
-        }
-        if(session.getUserType() != User.UserType.ADMIN.ordinal()) {
+        UserInfo loginUserInfo = userService.getUserInfo(uid);
+        if(loginUserInfo.getUserType() != User.UserType.ADMIN.ordinal()) {
             throw new BusinessException(ErrorCode.NO_AUTHENTICATION);
         }
         List<User> users = userService.getUsers(offset, limit);

@@ -1,12 +1,12 @@
 package com.nsm.mvc.controller;
 
+import com.nsm.mvc.bean.User;
 import com.nsm.mvc.bean.UserSetting;
 import com.nsm.mvc.exception.BusinessException;
 import com.nsm.mvc.exception.ErrorCode;
 import com.nsm.mvc.service.AuthService;
 import com.nsm.mvc.service.UserService;
 import com.nsm.mvc.view.UserInfo;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,9 +69,6 @@ public class UserController extends ErrorHandler{
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public UserInfo current(@RequestAttribute long uid){
-        if(uid == 0) {
-            throw new BusinessException(ErrorCode.NO_LOGIN);
-        }
         UserInfo userInfo = userService.getUserInfo(uid);
         if(userInfo == null) {
             throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
@@ -79,33 +76,36 @@ public class UserController extends ErrorHandler{
         return userInfo;
     }
 
-    @RequestMapping("/rename")
-     public void rename(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam String name){
-        //TODO
+    @RequestMapping("/changeInfo")
+     public void changeInfo(@RequestAttribute long uid, ServletRequest request){
+        User.Update update = new User.Update(uid);
+        String nickname = request.getParameter("nickname");
+        if(nickname != null) {
+            update.nickname = nickname;
+        }
+        String userIcon = request.getParameter("userIcon");
+        if(userIcon != null) {
+            update.userIcon = userIcon;
+        }
+        String privacy = request.getParameter("privacy");
+        if(privacy != null) {
+            update.privacy = Integer.valueOf(privacy);
+        }
+        userService.changeInfo(update);
     }
 
-    @RequestMapping("/changeIcon")
-    public void changeIcon(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam String icon){
-        //TODO
-    }
 
     @RequestMapping("/changePwd")
-    public void changePwd(@RequestAttribute long uid, @RequestAttribute String sid,
-                          @RequestParam String oldPwd, @RequestParam String newPwd){
-        //TODO
+    public void changePwd(@RequestAttribute long uid, @RequestParam String oldPwd, @RequestParam String newPwd){
+        userService.changePwd(uid, oldPwd, newPwd);
     }
 
-    @RequestMapping("/changePrivacy")
-    public void changePrivacy(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam int privacy){
-        //TODO
-    }
 
     @RequestMapping("/changeSetting")
-    public void changeSetting(@RequestAttribute long uid, @RequestAttribute String sid, ServletRequest request){
-        UserSetting.Update update = new UserSetting.Update();
-        update.userId = uid;
+    public void changeSetting(@RequestAttribute long uid, ServletRequest request){
+        UserSetting.Update update = new UserSetting.Update(uid);
         String autoJoinGroup = request.getParameter("autoJoinGroup");
-        if(StringUtils.isNotBlank(autoJoinGroup)) {
+        if(autoJoinGroup != null) {
             update.autoJoinGroup = Boolean.valueOf(autoJoinGroup);
         }
         userService.changeSetting(update);

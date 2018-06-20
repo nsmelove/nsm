@@ -24,26 +24,60 @@ public class User {
         PUBLIC,//所以人都能看到
         CONTACT,//联系人才能看到
         PRIVATE//自己才能看到
-    }
-
-    public static class Update{
-        Integer privacy;
-    }
-
-    public static User newUpdate(){
-        User update = new User();
-        update.setUserType(-1);
-        update.setUserStatus(-1);
-        return update;
+        ;
+        public static UserPrivacy valueOf(int ordinal){
+            for(UserPrivacy privacy :UserPrivacy.values()){
+                if(privacy.ordinal() == ordinal) {
+                    return privacy;
+                }
+            }
+            return null;
+        }
     }
 
     public enum UserType{
-        NORMAL, ADMIN, SUPER_ADMIN
+        NORMAL, ADMIN, SUPER_ADMIN ;
+        public static UserType valueOf(int ordinal){
+            for(UserType userType :UserType.values()){
+                if(userType.ordinal() == ordinal) {
+                    return userType;
+                }
+            }
+            return null;
+        }
     }
 
     public enum UserStatus{
-        NORMAL, FORBIDDEN
+        NORMAL, FORBIDDEN;
+        public static UserStatus valueOf(int ordinal){
+            for(UserStatus userStatus :UserStatus.values()){
+                if(userStatus.ordinal() == ordinal) {
+                    return userStatus;
+                }
+            }
+            return null;
+        }
     }
+
+    public static class Update{
+        public long userId;
+        public Update(long userId){
+            this.userId = userId;
+        }
+        public Integer userType;
+        public String nickname;
+        public String userIcon;
+        public String password;
+        public Integer userStatus;
+        public Integer privacy;
+
+        public boolean existUpdate(){
+            return userType != null || nickname != null
+                    || userIcon != null || password != null
+                    || userStatus != null || privacy != null;
+        }
+    }
+
 
     public long getUserId() {
         return userId;

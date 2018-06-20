@@ -1,9 +1,11 @@
 package com.nsm.common.conf;
 
+import org.apache.commons.io.IOUtils;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.PropertyUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -53,7 +55,9 @@ public class YamlConfigUtils {
         if(in == null) {
             throw new NullPointerException("resource '" + name + "' not find !");
         }
-        return yaml.loadAs(in, type);
+        T t = yaml.loadAs(in, type);
+        IOUtils.closeQuietly(in);
+        return t;
     }
 
 }

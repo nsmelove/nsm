@@ -37,6 +37,10 @@
         where userId = #{uid}
     </select>
 
+    <select id="countUser" resultType="long">
+      select count(userId) from user
+    </select>
+
     <select id="getUserByUsername" resultType="com.nsm.mvc.bean.User">
         SELECT
           userId,
@@ -83,14 +87,11 @@
         limit #{offset},#{limit}
     </select>
 
-    <update id="updateUser" parameterType="com.nsm.mvc.bean.User">
+    <update id="updateUser" parameterType="com.nsm.mvc.bean.User$Update">
         update user
         <set>
-            <if test="userType >= 0">
+            <if test="userType != null">
                 userType = #{userType},
-            </if>
-            <if test="username != null">
-                username = #{username},
             </if>
             <if test="nickname != null">
                 nickname = #{nickname},
@@ -101,8 +102,11 @@
             <if test="password != null">
                 password = #{password},
             </if>
-            <if test="userStatus >= 0">
+            <if test="userStatus != null">
                 userStatus = #{userStatus},
+            </if>
+            <if test="privacy != null">
+                privacy = #{privacy},
             </if>
         </set>
         where userId = #{userId}
