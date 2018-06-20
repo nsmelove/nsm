@@ -16,7 +16,7 @@ public class MemcachedTest {
             client.incr("a",1,0,3000,4);
             while (true){
                 System.out.println("user/a:" + client.get("user/a"));
-                System.out.println("a:" + client.get("a"));
+                System.out.println("a:" + client.incr("a",1,0,3000,4));
                 Thread.sleep(500);
             }
         } catch (Exception e) {

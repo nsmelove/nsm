@@ -14,7 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Created by nieshuming on 2018/6/11.
+ * Created by nieshuming on 2018/6/11
  */
 @Component
 public class UserInfoCache {
