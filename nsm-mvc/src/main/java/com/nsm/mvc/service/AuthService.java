@@ -1,16 +1,16 @@
 package com.nsm.mvc.service;
 
 import com.google.common.collect.Maps;
-import com.nsm.common.memcache.MemcachedUtil;
+import com.google.common.collect.Sets;
 import com.nsm.common.redis.RedisUtil;
-import com.nsm.common.utils.JsonUtils;
 import com.nsm.mvc.bean.Session;
-import net.rubyeye.xmemcached.MemcachedClient;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Tuple;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,8 +25,9 @@ public class AuthService {
     private final String FIELD_USERID = "userId";
     //private final String FIELD_LASTTIME = "lastTime";
 
-    private Jedis jedis  = RedisUtil.geJedis();
-    private MemcachedClient memClient = MemcachedUtil.getMemClient();
+    //private Jedis jedis  = RedisUtil.geJedis();
+    private JedisCluster jedis  = RedisUtil.getJedisCluster();
+    //TODO 可设置二级缓存
 //    private LoadingCache<String, Session> loadingCache =
 //            CacheBuilder.newBuilder().build(new CacheLoader<String, Session>() {
 //                @Override
@@ -84,39 +85,100 @@ public class AuthService {
         return session;
     }
 
+    /**
+     * 获取会话对应的用户Id
+     * @param sid
+     * @return
+     */
     public long getUserId(String sid){
         String sidKey = getSessionKey(sid);
-        String uidStr = jedis.hget(sidKey,FIELD_USERID);
+        String uidStr = jedis.hget(sidKey, FIELD_USERID);
         if(uidStr == null) {
             return 0L;
         }
         return Long.valueOf(uidStr);
     }
 
+    /**
+     * 获取用户的所有会话Id
+     * @param userId
+     * @return
+     */
     public Set<String> getUserSessionIds(long userId) {
         String userSidsKey = getUserSessionsKey(userId);
-        Set<String> sids = jedis.zrange(userSidsKey, 0, Long.MAX_VALUE);
-        //TODO
+        Set<Tuple> sidScores = jedis.zrangeWithScores(userSidsKey, 0, Long.MAX_VALUE);
+        if(sidScores == null) {
+            return Collections.emptySet();
+        }
+        long now = System.currentTimeMillis();
+        Set<String> sids = Sets.newLinkedHashSetWithExpectedSize(sidScores.size());
+        for(Tuple sidScore : sidScores) {
+            if(now - sidScore.getScore() > SESSION_EXP_TIME) {
+                jedis.zrem(sidScore.getElement());
+            }else {
+                sids.add(sidScore.getElement());
+            }
+        }
         return sids;
     }
 
     /**
-     * 更新会话
-     * @param session 会话
+     * 获取用户所有的话
+     * @param userId
+     * @return
+     */
+    public Set<Session> getUserSessions(long userId) {
+        Set<String> sids = getUserSessionIds(userId);
+        if(sids.isEmpty()) {
+            return Collections.emptySet();
+        }
+        String userSidsKey = getUserSessionsKey(userId);
+        Set<Session> sessions = Sets.newLinkedHashSetWithExpectedSize(sids.size());
+        for(String sid : sids) {
+            Session session = getSession(sid);
+            if(session == null || session.getUserId() != userId) {
+                jedis.zrem(userSidsKey, sid);
+            }else {
+                sessions.add(session);
+            }
+        }
+        return sessions;
+    }
+
+    /**
+     * 刷新会话，防止过期
+     * @param sid 会话Id
+     * @return 会话存在true 否则false
+     */
+    public boolean refreshSession(String sid){
+        long userId = getUserId(sid);
+        if(userId > 0) {
+            String sidKey = getSessionKey(sid);
+            jedis.expire(sidKey, SESSION_EXP_TIME);
+            String userSidsKey = getUserSessionsKey(userId);
+            jedis.zadd(userSidsKey, System.currentTimeMillis() ,sid);
+            jedis.expire(userSidsKey, SESSION_EXP_TIME);
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    /**
+     * 清除会话
+     * @param userId 用户Id
+     * @param sid 会话Id
      * @return 结果
      */
-    public boolean updateSession(Session session){
-        if(session == null && StringUtils.isEmpty(session.getSessionId())) {
+    public boolean remSession(long userId, String sid){
+        if(userId <= 0) {
             return false;
         }
-        String jsonSession = JsonUtils.toJson(session);
-        try {
-            memClient.set(session.getSessionId(), 0, jsonSession);
-            return true;
-        } catch (Exception e) {
-            logger.error("update session error", e);
-            return false;
-        }
+        String sidKey = getSessionKey(sid);
+        jedis.del(sidKey);
+        String userSidsKey = getUserSessionsKey(userId);
+        jedis.zrem(userSidsKey, sid);
+        return true;
     }
 
     /**
@@ -125,13 +187,7 @@ public class AuthService {
      * @return 结果
      */
     public boolean remSession(String sid){
-        try {
-            memClient.delete(sid);
-            return true;
-        }catch (Exception e) {
-            logger.error("remove session error", e);
-            return false;
-        }
-
+        long userId = getUserId(sid);
+        return remSession(userId, sid);
     }
 }

@@ -76,6 +76,9 @@ public class User {
                     || userIcon != null || password != null
                     || userStatus != null || privacy != null;
         }
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        }
     }
 
 

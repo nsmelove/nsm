@@ -18,6 +18,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ public class AuthFilter implements Filter{
         if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
             throw new ServletException("AuthFilter just supports HTTP requests");
         }
+        long timeBegin = System.nanoTime();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String sid = httpRequest.getHeader(sessionId);
@@ -78,36 +80,42 @@ public class AuthFilter implements Filter{
         long uid = 0;
         if(!StringUtils.isEmpty(sid)){
             request.setAttribute(sessionId,sid);
-            uid = getUid(sid);
+            uid = authService.getUserId(sid);
             request.setAttribute(userId, uid);
         }else {
             sid = IdUtils.nextString32();
             httpResponse.setHeader(sessionId,sid);
             httpResponse.addCookie(new Cookie(sessionId, sid));
         }
-
-        if(uid == 0 && patternsRequestCondition != null && !patternsRequestCondition.isEmpty()){
-            if(patternsRequestCondition.getMatchingCondition(httpRequest) == null){
-                httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-                httpResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-                String resMsg = JsonUtils.toJson(ErrorCode.NO_LOGIN);
-                if(resMsg != null) {
-                    ServletOutputStream out = httpResponse.getOutputStream();
-                    out.write(resMsg.getBytes("utf-8"));
-                    out.flush();
+        try{
+            if(uid == 0 && patternsRequestCondition != null && !patternsRequestCondition.isEmpty()){
+                if(patternsRequestCondition.getMatchingCondition(httpRequest) == null){
+                    httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+                    httpResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+                    String resMsg = JsonUtils.toJson(ErrorCode.NO_LOGIN);
+                    if(resMsg != null) {
+                        ServletOutputStream out = httpResponse.getOutputStream();
+                        out.write(resMsg.getBytes("utf-8"));
+                        out.flush();
+                    }
+                    return;
                 }
-                return;
             }
-        }
-        chain.doFilter(request, response);
-    }
-
-    private long getUid(String sid) {
-        Session session = authService.getSession(sid);
-        if(session != null) {
-            return session.getUserId();
-        }else {
-            return 0;
+            chain.doFilter(request, response);
+        }finally {
+            long cost = (System.nanoTime() -timeBegin) / 1_000_000;
+            String queryString = httpRequest.getQueryString();
+            if(queryString == null) {
+                queryString ="";
+            }else {
+                queryString = "?" + queryString;
+            }
+            int status = httpResponse.getStatus();
+            logger.info("{} {}{} {} {}ms", httpRequest.getMethod(), httpRequest.getServletPath(), queryString , status, cost);
+            if(logger.isDebugEnabled()) {
+                logger.debug("auth info : sid={}, uid={}", sid, uid);
+                logger.debug("req params : {}", httpRequest.getParameterMap());
+            }
         }
     }
 

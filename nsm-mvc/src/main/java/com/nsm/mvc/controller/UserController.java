@@ -46,8 +46,8 @@ public class UserController extends ErrorHandler{
      */
     @RequestMapping("/login")
     @ResponseBody
-    public UserInfo login(@RequestParam String username, @RequestParam String password, @RequestAttribute String sid){
-        return userService.login(username, password, sid);
+    public UserInfo login(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam String username, @RequestParam String password){
+        return userService.login(uid, sid, username, password);
     }
 
     /**
@@ -100,6 +100,11 @@ public class UserController extends ErrorHandler{
         userService.changePwd(uid, oldPwd, newPwd);
     }
 
+    @RequestMapping("/setting")
+    @ResponseBody
+    public UserSetting getSetting(@RequestAttribute long uid){
+        return userService.getUserSetting(uid);
+    }
 
     @RequestMapping("/changeSetting")
     public void changeSetting(@RequestAttribute long uid, ServletRequest request){

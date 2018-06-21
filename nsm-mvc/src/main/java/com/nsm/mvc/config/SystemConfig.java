@@ -9,6 +9,11 @@ public class SystemConfig {
      * 是否为集群模式的服务
      */
     public boolean clusterMode = false;
+
+    /**
+     * 用户同时登录上限
+     */
+    public static final int loginLimit = 5;
     /**
      * 系统用户上限
      */

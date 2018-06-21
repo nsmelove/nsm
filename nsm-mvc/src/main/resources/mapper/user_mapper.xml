@@ -10,7 +10,8 @@
           userIcon,
           password,
           userStatus,
-          createTime
+          createTime,
+          privacy
         )values (
           #{userId},
           #{userType},
@@ -19,7 +20,8 @@
           #{userIcon},
           #{password},
           #{userStatus},
-          #{createTime}
+          #{createTime},
+          #{privacy}
         )
     </insert>
 
@@ -32,7 +34,8 @@
           userIcon,
           password,
           userStatus,
-          createTime
+          createTime,
+          privacy
         from user
         where userId = #{uid}
     </select>
@@ -50,7 +53,8 @@
           userIcon,
           password,
           userStatus,
-          createTime
+          createTime,
+          privacy
         from user
         where username = #{username}
     </select>
@@ -64,7 +68,8 @@
           userIcon,
           password,
           userStatus,
-          createTime
+          createTime,
+          privacy
         from user
         where userId in
         <foreach collection="uids" item="uid" open="(" close=")" separator=",">
@@ -81,7 +86,8 @@
           userIcon,
           password,
           userStatus,
-          createTime
+          createTime,
+          privacy
         from user
         order by userId
         limit #{offset},#{limit}
