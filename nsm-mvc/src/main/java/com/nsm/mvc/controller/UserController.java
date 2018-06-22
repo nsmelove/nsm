@@ -1,12 +1,12 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.mvc.bean.User;
-import com.nsm.mvc.bean.UserSetting;
-import com.nsm.mvc.exception.BusinessException;
-import com.nsm.mvc.exception.ErrorCode;
-import com.nsm.mvc.service.AuthService;
-import com.nsm.mvc.service.UserService;
-import com.nsm.mvc.view.UserInfo;
+import com.nsm.core.bean.User;
+import com.nsm.core.bean.UserSetting;
+import com.nsm.core.exception.BusinessException;
+import com.nsm.core.exception.ErrorCode;
+import com.nsm.core.service.AuthService;
+import com.nsm.core.service.UserService;
+import com.nsm.core.view.UserInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,7 +71,7 @@ public class UserController extends ErrorHandler{
     public UserInfo current(@RequestAttribute long uid){
         UserInfo userInfo = userService.getUserInfo(uid);
         if(userInfo == null) {
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+            throw new BusinessException(ErrorCode.NOT_FOUND);
         }
         return userInfo;
     }
@@ -126,7 +126,7 @@ public class UserController extends ErrorHandler{
     public UserInfo user(@PathVariable long uid){
         UserInfo userInfo = userService.getUserInfo(uid);
         if(userInfo == null) {
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+            throw new BusinessException(ErrorCode.NOT_FOUND);
         }
         return userInfo;
     }

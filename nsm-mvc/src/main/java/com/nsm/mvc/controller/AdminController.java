@@ -1,14 +1,14 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.mvc.bean.ProductCategory;
-import com.nsm.mvc.bean.ProductProperty;
-import com.nsm.mvc.bean.Session;
-import com.nsm.mvc.bean.User;
-import com.nsm.mvc.exception.BusinessException;
-import com.nsm.mvc.exception.ErrorCode;
-import com.nsm.mvc.service.AuthService;
-import com.nsm.mvc.service.UserService;
-import com.nsm.mvc.view.UserInfo;
+import com.nsm.core.bean.ProductCategory;
+import com.nsm.core.bean.ProductProperty;
+import com.nsm.core.bean.Session;
+import com.nsm.core.bean.User;
+import com.nsm.core.exception.BusinessException;
+import com.nsm.core.exception.ErrorCode;
+import com.nsm.core.service.AuthService;
+import com.nsm.core.service.UserService;
+import com.nsm.core.view.UserInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":nsm-core")
+    compile 'io.vertx:vertx-core:3.5.2'
+}

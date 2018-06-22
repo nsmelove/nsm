@@ -1,8 +1,8 @@
 package com.nsm.mvc.controller;
 
 import com.nsm.common.fastdfs.FastdfsClient;
-import com.nsm.mvc.exception.BusinessException;
-import com.nsm.mvc.exception.ErrorCode;
+import com.nsm.core.exception.BusinessException;
+import com.nsm.core.exception.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 import org.csource.common.MyException;
 import org.csource.fastdfs.DownloadStream;
@@ -47,10 +47,10 @@ public class FileController extends ErrorHandler{
             return String.join("/", results);
         } catch (IOException e) {
             logger.error("get upload input stream error", e);
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         } catch (MyException e) {
             logger.error("upload file to fastdfs error", e);
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -66,7 +66,7 @@ public class FileController extends ErrorHandler{
             FileInfo fileInfo = storageClient.get_file_info1(fileId);
             if(fileInfo == null) {
                 logger.warn("no fileId {} in fastdfs", fileId);
-                throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+                throw new BusinessException(ErrorCode.NOT_FOUND);
             }
             res.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             res.setContentLengthLong(fileInfo.getFileSize());

@@ -1,16 +1,16 @@
 package com.nsm.mvc.controller;
 
 import com.google.common.collect.Lists;
-import com.nsm.mvc.bean.GroupInvite;
-import com.nsm.mvc.bean.GroupMember;
-import com.nsm.mvc.bean.UserGroup;
-import com.nsm.mvc.exception.BusinessException;
-import com.nsm.mvc.exception.ErrorCode;
-import com.nsm.mvc.service.UserGroupService;
-import com.nsm.mvc.service.UserService;
-import com.nsm.mvc.view.GroupInviteInfo;
-import com.nsm.mvc.view.GroupMemberInfo;
-import com.nsm.mvc.view.UserInfo;
+import com.nsm.core.bean.GroupInvite;
+import com.nsm.core.bean.GroupMember;
+import com.nsm.core.bean.UserGroup;
+import com.nsm.core.exception.BusinessException;
+import com.nsm.core.exception.ErrorCode;
+import com.nsm.core.service.UserGroupService;
+import com.nsm.core.service.UserService;
+import com.nsm.core.view.GroupInviteInfo;
+import com.nsm.core.view.GroupMemberInfo;
+import com.nsm.core.view.UserInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,7 +77,7 @@ public class UserGroupController extends ErrorHandler{
         if(userGroupService.isGroupMember(uid, gid) == 0){
             UserGroup userGroup = userGroupService.getUserGroup(gid);
             if(userGroup == null) {
-                throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+                throw new BusinessException(ErrorCode.NOT_FOUND);
             }
             if(userGroup.getPrivacy() == UserGroup.GroupPrivacy.PRIVATE.ordinal() ||
                     (userGroup.getPrivacy() == UserGroup.GroupPrivacy.CLOSED.ordinal() && false)) {//TODO 创建者联系人可以看见
@@ -101,7 +101,7 @@ public class UserGroupController extends ErrorHandler{
                        @PathVariable long gid, @PathVariable long mid, @RequestParam boolean silent){
         int isMember = userGroupService.isGroupMember(mid, gid);
         if(isMember == 0) {
-            throw new BusinessException(ErrorCode.fromHttpStatus(HttpStatus.NOT_FOUND));
+            throw new BusinessException(ErrorCode.NOT_FOUND);
         }
         int userIsMember = userGroupService.isGroupMember(uid, gid);
         if(userIsMember <= isMember) {

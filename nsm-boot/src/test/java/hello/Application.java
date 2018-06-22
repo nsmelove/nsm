@@ -13,6 +13,7 @@ public class Application implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+
     }
 
     @Override
@@ -42,6 +43,7 @@ public class Application implements CommandLineRunner {
         for (Customer customer : repository.findByLastName("Smith")) {
             System.out.println(customer);
         }
+        System.out.println("thread count:" + Thread.activeCount());
 
     }
 

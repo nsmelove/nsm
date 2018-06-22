@@ -1,7 +1,7 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.mvc.exception.BusinessException;
-import com.nsm.mvc.exception.ErrorCode;
+import com.nsm.core.exception.BusinessException;
+import com.nsm.core.exception.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +32,7 @@ public class ErrorHandler {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorCode> errorHandler(Exception ex) {
 
-        ErrorCode errorCode = ErrorCode.fromHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
         logger.error(errorCode.getMsg(), ex);
         return new ResponseEntity<>(errorCode, headers(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -44,7 +44,7 @@ public class ErrorHandler {
      */
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorCode> parameterErrorHandler(MissingServletRequestParameterException ex) {
-        ErrorCode errorCode = ErrorCode.fromHttpStatus(HttpStatus.BAD_REQUEST);
+        ErrorCode errorCode = ErrorCode.BAD_REQUEST;
         logger.error(errorCode.getMsg(), ex);
         return new ResponseEntity<>(errorCode, headers(), HttpStatus.BAD_REQUEST);
     }
