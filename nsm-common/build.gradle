@@ -1,4 +1,11 @@
 dependencies {
+    compile 'io.netty:netty-buffer:4.1.19.Final'
+    compile 'io.netty:netty-codec:4.1.19.Final'
+    compile 'io.netty:netty-codec-http:4.1.19.Final'
+    compile 'io.netty:netty-common:4.1.19.Final'
+    compile 'io.netty:netty-handler:4.1.19.Final'
+    compile 'io.netty:netty-resolver:4.1.19.Final'
+    compile 'io.netty:netty-transport:4.1.19.Final'
     compile group: 'com.googlecode.xmemcached', name: 'xmemcached', version: '2.0.0'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
     compile group: 'net.oschina.zcx7878', name: 'fastdfs-client-java', version: '1.27.0.0'

@@ -7,3 +7,4 @@
 /nsm-boot/*.iml
 /*.iml
 /nsm-core/*.iml
+/nsm-vertx/*.iml
