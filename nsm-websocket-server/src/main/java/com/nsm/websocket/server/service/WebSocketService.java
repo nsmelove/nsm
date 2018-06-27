@@ -12,16 +12,13 @@ import com.nsm.core.SpringContainer;
 import com.nsm.core.service.MessageService;
 import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserGroupService;
-import com.nsm.websocket.eventbus.EventBusClient;
-import com.nsm.websocket.eventbus.Receiver;
+import com.nsm.websocket.WebSocketAPI;
+import com.nsm.websocket.bean.Receiver;
 import com.nsm.websocket.server.ConnClient;
 
-import com.nsm.websocket.server.WebSocketServer;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.ServerWebSocket;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -62,7 +59,7 @@ public interface WebSocketService {
             private String deploymentID =verticle.deploymentID();
             private Vertx vertx = verticle.getVertx();
             private Map<Long,Map<String, ConnClient>> userClientMap = new ConcurrentHashMap<>();
-            private EventBusClient eventBusClient = EventBusClient.create(vertx).consume(deploymentID, this::sendPacketLocal);
+            private WebSocketAPI webSocketAPI = WebSocketAPI.create(vertx).consume(deploymentID, this::sendPacketLocal);
             private SessionService sessionService = SpringContainer.getBean(SessionService.class);
             private MessageService messageService = SpringContainer.getBean(MessageService.class);
             private UserGroupService userGroupService = SpringContainer.getBean(UserGroupService.class);
@@ -70,7 +67,7 @@ public interface WebSocketService {
             private void addToRegisterClient(ConnClient client){
                 Map<String, ConnClient> sessionClientMap = userClientMap.computeIfAbsent(client.getUserId(), (u) -> Maps.newConcurrentMap());
                 sessionClientMap.put(client.getSessionId(), client);
-                eventBusClient.join(deploymentID, client.getUserId(), client.getSessionId());
+                webSocketAPI.join(client.getUserId(), client.getSessionId(), deploymentID);
             }
 
             private void removeFromRegisterClient(ConnClient client){
@@ -78,11 +75,11 @@ public interface WebSocketService {
                 if(sessionClientMap != null) {
                     sessionClientMap.remove(client.getSessionId());
                 }
-                eventBusClient.quit(client.getUserId(), client.getSessionId());
+                webSocketAPI.quit(client.getUserId(), client.getSessionId());
             }
 
             private void sendPacketLocal(Collection<Receiver> receivers, Packet packet){
-                logger.info("send local packet:{} ,receivers:{}", packet, receivers);
+                logger.debug("send local packet:{} ,receivers:{}", packet, receivers);
                 receivers.forEach(receiver ->{
                     Map<String, ConnClient> sessionClientMap = userClientMap.get(receiver.getUserId());
                     if(sessionClientMap != null) {
@@ -98,7 +95,7 @@ public interface WebSocketService {
 
             @Override
             public void sendPacket(long userId, Packet packet){
-                logger.info("send packet:{},userId:{}", packet, userId);
+                logger.debug("send packet:{},userId:{}", packet, userId);
                 Map<String, ConnClient> sessionClientMap = userClientMap.get(userId);
                 Set<String> busIgnoreSids = Sets.newHashSet();
                 if(sessionClientMap != null) {
@@ -108,12 +105,12 @@ public interface WebSocketService {
                     busIgnoreSids.addAll(sessionClientMap.keySet());
                 }
                 Receiver otherReceiver = Receiver.newReceiverIgnore(userId, busIgnoreSids);
-                eventBusClient.sendPacket(Lists.newArrayList(otherReceiver), packet);
+                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet);
             }
 
             @Override
             public void sendPacket(long userId, Packet packet, Collection<String> ignoreSids){
-                logger.info("send packet:{},userId:{},ignoreSids:{}", packet, userId, ignoreSids);
+                logger.debug("send packet:{},userId:{},ignoreSids:{}", packet, userId, ignoreSids);
                 Map<String, ConnClient> sessionClientMap = userClientMap.get(userId);
                 Set<String> busIgnoreSids = Sets.newHashSet();
                 if(sessionClientMap != null){
@@ -128,12 +125,12 @@ public interface WebSocketService {
                     busIgnoreSids.addAll(ignoreSids);
                 }
                 Receiver otherReceiver = Receiver.newReceiverIgnore(userId, busIgnoreSids);
-                eventBusClient.sendPacket(Lists.newArrayList(otherReceiver), packet);
+                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet);
             }
 
             @Override
             public void sendPacket(Collection<Receiver> receivers, Packet packet){
-                logger.info("send packet:{},receivers:{}", packet, receivers);
+                logger.debug("send packet:{},receivers:{}", packet, receivers);
                 List<Receiver> otherReceivers = Lists.newArrayListWithExpectedSize(receivers.size());
                 receivers.forEach(receiver ->{
                     Map<String, ConnClient> sessionClientMap = userClientMap.get(receiver.getUserId());
@@ -154,7 +151,7 @@ public interface WebSocketService {
                     }
                     otherReceivers.add(otherReceiver);
                 });
-                eventBusClient.sendPacket(otherReceivers, packet);
+                webSocketAPI.sendPacket(otherReceivers, packet);
             }
 
             @Override
@@ -171,9 +168,7 @@ public interface WebSocketService {
                         addToRegisterClient(client);
                         f.complete(ErrorCode.OK);
                     }
-                }, false, res -> {
-                    resultHandler.handle(res.result());
-                });
+                }, false, res -> resultHandler.handle(res.result()));
 
             }
 
@@ -197,13 +192,14 @@ public interface WebSocketService {
                 vertx.executeBlocking(f ->{
                     if (message.getToType() == Message.ToType.GROUP.ordinal()) {
                         List<Long> memberIds = userGroupService.groupMemberIdList(message.getToId());
-                        for (Long memberId : memberIds) {
+                        List<Receiver> receivers = Lists.transform(memberIds, memberId ->{
                             if (memberId == client.getUserId()) {
-                                sendPacket(message.getFromId(), msgPacket, Lists.newArrayList(client.getSessionId()));
+                                return Receiver.newReceiverIgnore(memberId, Lists.newArrayList(client.getSessionId()));
                             } else {
-                                sendPacket(memberId, msgPacket);
+                                return Receiver.newReceiver(memberId);
                             }
-                        }
+                        });
+                        sendPacket(receivers, msgPacket);
                     } else {
                         sendPacket(message.getToId(), msgPacket);
                         sendPacket(message.getFromId(), msgPacket, Lists.newArrayList(client.getSessionId()));

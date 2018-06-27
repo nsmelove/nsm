@@ -1,16 +1,16 @@
-package com.nsm.websocket.eventbus;
+package com.nsm.websocket;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nsm.bean.packet.Packet;
 import com.nsm.common.utils.JsonUtils;
+import com.nsm.websocket.bean.Receiver;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.shareddata.AsyncMap;
-import io.vertx.core.shareddata.Lock;
 import io.vertx.core.shareddata.SharedData;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 /**
  * Created by nieshuming on 2018/6/26
  */
-public class EventBusClient {
+public class WebSocketAPI{
     private static Vertx vertx ;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     private final static String addressPrefix ="ws.packet.";
@@ -35,12 +35,12 @@ public class EventBusClient {
     private SharedData sharedData;
     private AsyncMap<Long,Map<String,String>> userSessionMap;
     private MessageConsumer<String> consumer;
-    private EventBusClient(){}
-    public static EventBusClient create(Vertx vertx){
-        if (EventBusClient.vertx == null) {
-            EventBusClient.vertx = vertx;
+    private WebSocketAPI(){}
+    public static WebSocketAPI create(Vertx vertx){
+        if (WebSocketAPI.vertx == null) {
+            WebSocketAPI.vertx = vertx;
         }
-        EventBusClient client = new EventBusClient();
+        WebSocketAPI client = new WebSocketAPI();
         client.eventBus = vertx.eventBus();
         client.sharedData = vertx.sharedData();
         client.sharedData.<Long,Map<String,String>>getAsyncMap(sharedDataUserSession, res ->{
@@ -49,7 +49,7 @@ public class EventBusClient {
         return client;
     };
 
-    public EventBusClient consume(String deployId, BiConsumer<List<Receiver>, Packet> packetHandler){
+    public WebSocketAPI consume(String deployId, BiConsumer<List<Receiver>, Packet> packetHandler){
         String address = addressPrefix + deployId;
         if(this.consumer == null || !this.consumer.isRegistered()) {
             this.consumer = eventBus.consumer(address);
@@ -69,65 +69,66 @@ public class EventBusClient {
         return this;
     }
 
-    public EventBusClient join(String deployId, long userId, String sessionId){
+    public WebSocketAPI join(long userId, String sessionId, String deployId){
         if(userSessionMap == null) {
             logger.warn("join ignored, because userSessionMap has not initialized yet !");
             return this;
         }
-        sharedData.getLock(String.valueOf(userId), lockRes ->{
-            if(lockRes.succeeded()) {
-                Lock lock = lockRes.result();
-                userSessionMap.get(userId, sidRes ->{
-                    if(sidRes.succeeded()) {
-                        Map<String,String> sidDeployIdMap = sidRes.result();
-                        if(sidDeployIdMap == null) {
-                            sidDeployIdMap = Maps.newHashMapWithExpectedSize(1);
-                        }
-                        sidDeployIdMap.put(sessionId, deployId);
-                        userSessionMap.put(userId, sidDeployIdMap, putRes ->{
-                            logger.info("user:{} session:{} join deployId:{} {}", userId, sessionId, deployId, putRes.succeeded());
-                        });
-                    }else {
-                        logger.error("user:{} session:{} join deployId:{} failed", userId, sessionId, deployId, sidRes.cause());
-                    }
-                    lock.release();
+        userSessionMap.get(userId, sidRes ->{
+            if(sidRes.succeeded()) {
+                Map<String,String> sidDeployIdMap = sidRes.result();
+                if(sidDeployIdMap == null) {
+                    sidDeployIdMap = Maps.newHashMapWithExpectedSize(1);
+                }
+                sidDeployIdMap.put(sessionId, deployId);
+                userSessionMap.put(userId, sidDeployIdMap, putRes ->{
+                    logger.debug("user:{} session:{} join deployId:{} success ?  {}", userId, sessionId, deployId, putRes.succeeded());
                 });
             }else {
-                logger.error("user:{} session:{} join deployId:{} failed", userId, sessionId, deployId, lockRes.cause());
+                logger.error("user:{} session:{} join deployId:{} failed", userId, sessionId, deployId, sidRes.cause());
             }
         });
         return this;
     }
 
-    public EventBusClient quit(long userId, String sessionId){
+    public WebSocketAPI quit(long userId, String sessionId){
         if(userSessionMap == null) {
             return this;
         }
-        sharedData.getLock(String.valueOf(userId), lockRes ->{
-            if(lockRes.succeeded()) {
-                Lock lock = lockRes.result();
-                userSessionMap.get(userId, sidRes ->{
-                    if(sidRes.succeeded()) {
-                        Map<String,String> sidDeployIdMap = sidRes.result();
-                        if(sidDeployIdMap != null) {
-                            String deployId = sidDeployIdMap.remove(sessionId);
-                            userSessionMap.put(userId, sidDeployIdMap, putRes ->{
-                                logger.info("user:{} session:{} quit deployId:{} success ? {}", userId, sessionId, deployId, putRes.succeeded());
-                            });
-                        }
+        userSessionMap.get(userId, sidRes ->{
+            if(sidRes.succeeded()) {
+                Map<String,String> sidDeployIdMap = sidRes.result();
+                if(sidDeployIdMap != null) {
+                    String deployId = sidDeployIdMap.remove(sessionId);
+                    if(sidDeployIdMap.isEmpty()) {
+                        userSessionMap.remove(userId, remRes ->{
+                            logger.debug("user:{} session:{} quit deployId:{} success ? {}", userId, sessionId, deployId, remRes.succeeded());
+                        });
                     }else {
-                        logger.error("user:{} session:{} quit deployId failed", userId, sessionId, sidRes.cause());
+                        userSessionMap.put(userId, sidDeployIdMap, putRes ->{
+                            logger.debug("user:{} session:{} quit deployId:{} success ? {}", userId, sessionId, deployId, putRes.succeeded());
+                        });
                     }
-                    lock.release();
-                });
+                }
             }else {
-                logger.error("user:{} session:{} quit deployId failed", userId, sessionId, lockRes.cause());
+                logger.error("user:{} session:{} quit deployId failed", userId, sessionId, sidRes.cause());
             }
         });
         return this;
     }
 
-    public EventBusClient sendPacket(Collection<Receiver> receivers, Packet packet){
+    public WebSocketAPI joinSessions(long userId, Handler<Map<String,String>> resultHandler){
+        if(userSessionMap == null) {
+            resultHandler.handle(null);
+            return this;
+        }
+        userSessionMap.get(userId, sidRes ->{
+            resultHandler.handle(sidRes.result());
+        });
+        return this;
+    }
+
+    public WebSocketAPI sendPacket(Collection<Receiver> receivers, Packet packet){
         if(userSessionMap == null) {
             logger.warn("send ignored, because userSessionMap has not initialized yet !");
             return this;

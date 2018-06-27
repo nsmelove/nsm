@@ -2,8 +2,8 @@ package com.nsm.vertx;
 
 import com.google.common.collect.Lists;
 import com.nsm.bean.packet.Packet;
-import com.nsm.websocket.eventbus.EventBusClient;
-import com.nsm.websocket.eventbus.Receiver;
+import com.nsm.websocket.WebSocketAPI;
+import com.nsm.websocket.bean.Receiver;
 import io.vertx.core.Vertx;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class EventBusClientTest {
 
     public static void main(String[] args) {
-        EventBusClient client = EventBusClient.create(Vertx.vertx());
+        WebSocketAPI client = WebSocketAPI.create(Vertx.vertx());
         client.consume("111", (rec, packet) ->{
             System.out.println("rec:{}"+ rec+ " packet:" + packet);
         });

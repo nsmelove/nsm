@@ -1,33 +1,18 @@
 package com.nsm.websocket.server;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.nsm.common.utils.JsonUtils;
 import com.nsm.bean.ErrorCode;
 import com.nsm.bean.message.Message;
-import com.nsm.websocket.config.WebSocketConfig;
 import com.nsm.bean.message.RegInfo;
 import com.nsm.bean.packet.Packet;
 import com.nsm.bean.packet.Packet.DataType;
-import com.nsm.websocket.eventbus.EventBusClient;
-import com.nsm.websocket.eventbus.Receiver;
 import com.nsm.websocket.server.service.WebSocketService;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrame;
-import io.vertx.core.shareddata.AsyncMap;
-import io.vertx.core.shareddata.SharedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -81,7 +66,12 @@ public class ConnClient{
                 ackHandler.handle(ErrorCode.BAD_REQUEST);
             }else {
                 ack.setId(packet.getId());
-                switch (DataType.valueOf(packet.getType())){
+                DataType dataType = DataType.valueOf(packet.getType());
+                if(dataType == null) {
+                    ackHandler.handle(ErrorCode.BAD_REQUEST);
+                    return;
+                }
+                switch (dataType){
                     case ACK:
                         //do nothing
                         break;

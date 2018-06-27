@@ -1,4 +1,4 @@
-package com.nsm.websocket.eventbus;
+package com.nsm.websocket.bean;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.builder.ToStringBuilder;
