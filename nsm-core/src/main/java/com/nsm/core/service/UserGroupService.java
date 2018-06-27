@@ -12,7 +12,7 @@ import com.nsm.core.dao.GroupInviteDao;
 import com.nsm.core.dao.GroupMemberDao;
 import com.nsm.core.dao.UserGroupDao;
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
+import com.nsm.bean.ErrorCode;
 import com.nsm.core.view.GroupInviteInfo;
 import com.nsm.core.view.GroupMemberInfo;
 import com.nsm.core.view.UserInfo;
@@ -124,7 +124,7 @@ public class UserGroupService {
                 throw new BusinessException(ErrorCode.NOT_FOUND);
             }
             if(parentGroup.getCreatorId() != userId){
-                throw new BusinessException(ErrorCode.NO_AUTHENTICATION);
+                throw new BusinessException(ErrorCode.NO_PERMISSION);
             }
             if(parentGroup.getGroupLevel() >= SystemConfig.groupLevelLimit) {
                 throw new BusinessException(ErrorCode.USER_GROUP_LEVEL_LIMIT);
@@ -259,6 +259,17 @@ public class UserGroupService {
      */
     public List<GroupMember> groupMemberList(long groupId, int offset, int limit) {
         return groupMemberDao.getGroupMembers(groupId, offset, limit);
+    }
+
+    /**
+     * 小组成员Id列表
+     *
+     * @param groupId 小组Id
+     * @return 成员Id列表
+     */
+    public List<Long> groupMemberIdList(long groupId) {
+        //TODO cache
+        return groupMemberDao.getGroupMemberIds(groupId, null);
     }
 
     /**

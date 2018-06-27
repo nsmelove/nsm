@@ -10,7 +10,7 @@ import com.nsm.core.config.SystemConfig;
 import com.nsm.core.dao.UserDao;
 import com.nsm.core.dao.UserSettingDao;
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
+import com.nsm.bean.ErrorCode;
 import com.nsm.core.view.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
-    private AuthService authService;
+    private SessionService sessionService;
     @Resource
     private UserDao userDao;
     @Resource
@@ -89,14 +89,14 @@ public class UserService {
         if(!encodePwd.equals(user.getPassword())){
             throw new BusinessException(ErrorCode.USER_PASSWORD_WRONG);
         }
-        List<String> sids = Lists.newArrayList(authService.getUserSessionIds(user.getUserId()));
+        List<String> sids = Lists.newArrayList(sessionService.getUserSessionIds(user.getUserId()));
         while(sids.size() >= SystemConfig.loginLimit){
-            authService.remSession(user.getUserId(),sids.remove(0));
+            sessionService.remSession(user.getUserId(),sids.remove(0));
         }
         if(oldUid > 0 && oldUid != user.getUserId()) {
-            authService.remSession(oldUid, sid);
+            sessionService.remSession(oldUid, sid);
         }
-        authService.newSession(sid, user.getUserId());
+        sessionService.newSession(sid, user.getUserId());
         return UserInfo.fromUser(user);
     }
 

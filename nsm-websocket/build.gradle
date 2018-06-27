@@ -1,0 +1,5 @@
+dependencies {
+    compile 'io.vertx:vertx-hazelcast:3.5.2'
+    compile project(":nsm-common")
+    compile project(":nsm-bean")
+}

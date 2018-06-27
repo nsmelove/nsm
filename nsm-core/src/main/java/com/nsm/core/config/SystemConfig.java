@@ -8,7 +8,7 @@ public class SystemConfig {
     /**
      * 是否为集群模式的服务
      */
-    public static boolean clusterMode = false;
+    public static boolean clusterMode = true;
 
     /**
      * 用户同时登录上限

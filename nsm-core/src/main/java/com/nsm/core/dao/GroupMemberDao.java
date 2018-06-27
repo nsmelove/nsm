@@ -68,6 +68,19 @@ public class GroupMemberDao {
         return  template.find(query, GroupMember.class);
     }
 
+    public List<Long> getGroupMemberIds(long groupId, Boolean isAdmin) {
+        Criteria criteria = Criteria.where("groupId").is(groupId);
+        if(isAdmin != null) {
+            criteria = criteria.and("isAdmin").is(isAdmin);
+        }
+        //Projections.fields(Projections.include("groupId"), Projections.excludeId());
+        Document fieldsObject = new Document("memberId", 1);
+        fieldsObject.put("_id", 0);
+        Query query = new BasicQuery(criteria.getCriteriaObject(), fieldsObject);
+        List<GroupMember> members = template.find(query, GroupMember.class);
+        return members.stream().map(GroupMember::getMemberId).collect(Collectors.toList());
+    }
+
     public List<Long> getMemberGroupIds(long memberId, Boolean isAdmin) {
         Criteria criteria = Criteria.where("memberId").is(memberId);
         if(isAdmin != null) {

@@ -1,0 +1,9 @@
+apply plugin: 'application'
+mainClassName = "com.nsm.websocket.server.WebSocketServer.Main"
+applicationDefaultJvmArgs = ["-DXmx=128,-DXms=128"]
+
+dependencies {
+    compile project(":nsm-core")
+    compile project(":nsm-websocket")
+    compile 'io.vertx:vertx-web:3.5.2'
+}

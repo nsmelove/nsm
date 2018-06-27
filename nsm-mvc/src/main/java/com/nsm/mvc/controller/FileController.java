@@ -2,7 +2,7 @@ package com.nsm.mvc.controller;
 
 import com.nsm.common.fastdfs.FastdfsClient;
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
+import com.nsm.bean.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 import org.csource.common.MyException;
 import org.csource.fastdfs.DownloadStream;

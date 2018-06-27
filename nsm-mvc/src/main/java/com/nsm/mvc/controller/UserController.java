@@ -3,11 +3,10 @@ package com.nsm.mvc.controller;
 import com.nsm.core.bean.User;
 import com.nsm.core.bean.UserSetting;
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
-import com.nsm.core.service.AuthService;
+import com.nsm.bean.ErrorCode;
+import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserService;
 import com.nsm.core.view.UserInfo;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,7 +21,7 @@ import javax.servlet.ServletRequest;
 @RequestMapping("/user")
 public class UserController extends ErrorHandler{
     @Resource
-    private AuthService authService;
+    private SessionService sessionService;
     @Resource
     private UserService userService;
 
@@ -57,7 +56,7 @@ public class UserController extends ErrorHandler{
      */
     @RequestMapping("/logout")
     public void logout(@RequestAttribute long uid, @RequestAttribute String sid){
-        authService.remSession(sid);
+        sessionService.remSession(sid);
 
     }
 
@@ -93,7 +92,6 @@ public class UserController extends ErrorHandler{
         }
         userService.changeInfo(update);
     }
-
 
     @RequestMapping("/changePwd")
     public void changePwd(@RequestAttribute long uid, @RequestParam String oldPwd, @RequestParam String newPwd){

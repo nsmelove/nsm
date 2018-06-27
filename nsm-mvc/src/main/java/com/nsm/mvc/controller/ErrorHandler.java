@@ -1,7 +1,7 @@
 package com.nsm.mvc.controller;
 
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
+import com.nsm.bean.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;

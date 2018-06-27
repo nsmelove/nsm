@@ -2,11 +2,10 @@ package com.nsm.mvc.controller;
 
 import com.nsm.core.bean.ProductCategory;
 import com.nsm.core.bean.ProductProperty;
-import com.nsm.core.bean.Session;
 import com.nsm.core.bean.User;
 import com.nsm.core.exception.BusinessException;
-import com.nsm.core.exception.ErrorCode;
-import com.nsm.core.service.AuthService;
+import com.nsm.bean.ErrorCode;
+import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserService;
 import com.nsm.core.view.UserInfo;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController extends ErrorHandler{
     @Resource
-    private AuthService authService;
+    private SessionService sessionService;
     @Resource
     private UserService userService;
 
@@ -43,7 +42,7 @@ public class AdminController extends ErrorHandler{
                             @RequestParam(required = false) int userType, @RequestParam(required = false) int status){
         UserInfo loginUserInfo = userService.getUserInfo(uid);
         if(loginUserInfo.getUserType() != User.UserType.ADMIN.ordinal()) {
-            throw new BusinessException(ErrorCode.NO_AUTHENTICATION);
+            throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
         List<User> users = userService.getUsers(offset, limit);
         return users;

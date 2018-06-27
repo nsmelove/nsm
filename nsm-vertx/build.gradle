@@ -1,9 +1,0 @@
-apply plugin: 'application'
-mainClassName = "com.nsm.vertx.websocket.Main"
-applicationDefaultJvmArgs = ["-DXmx=128,-DXms=128"]
-dependencies {
-    compile project(":nsm-core")
-    compile 'io.vertx:vertx-core:3.5.2'
-    compile 'io.vertx:vertx-web:3.5.2'
-    compile 'io.vertx:vertx-hazelcast:3.5.2'
-}

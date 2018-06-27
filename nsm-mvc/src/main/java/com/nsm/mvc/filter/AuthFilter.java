@@ -3,9 +3,8 @@ package com.nsm.mvc.filter;
 import com.nsm.common.conf.YamlConfigUtils;
 import com.nsm.common.utils.IdUtils;
 import com.nsm.common.utils.JsonUtils;
-import com.nsm.core.bean.Session;
-import com.nsm.core.exception.ErrorCode;
-import com.nsm.core.service.AuthService;
+import com.nsm.bean.ErrorCode;
+import com.nsm.core.service.SessionService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class AuthFilter implements Filter{
     public static final String noNeedAuthUrlKey = "noNeedAuthUrl";
     public static final String defaultConfigFile = "authConfig.yaml";
     private PatternsRequestCondition patternsRequestCondition = null;
-    private AuthService authService = new AuthService();
+    private SessionService sessionService = new SessionService();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -79,7 +78,7 @@ public class AuthFilter implements Filter{
         long uid = 0;
         if(!StringUtils.isEmpty(sid)){
             request.setAttribute(sessionId,sid);
-            uid = authService.getUserId(sid);
+            uid = sessionService.getUserId(sid);
             request.setAttribute(userId, uid);
         }else {
             sid = IdUtils.nextString32();

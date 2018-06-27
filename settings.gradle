@@ -1,7 +1,12 @@
 rootProject.name = 'nsm'
 include 'nsm-common'
+include 'nsm-bean'
 include 'nsm-core'
 include 'nsm-mvc'
 include 'nsm-boot'
-include 'nsm-vertx'
+include 'nsm-websocket'
+include 'nsm-websocket-server'
+
+
+
 

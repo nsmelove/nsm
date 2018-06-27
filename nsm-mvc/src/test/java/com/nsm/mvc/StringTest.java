@@ -1,7 +1,7 @@
 package com.nsm.mvc;
 
 import com.nsm.common.utils.JsonUtils;
-import com.nsm.mvc.exception.ErrorCode;
+import com.nsm.bean.ErrorCode;
 
 /**
  * Description for this file
