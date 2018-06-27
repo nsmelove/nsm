@@ -8,3 +8,6 @@
 /*.iml
 /nsm-core/*.iml
 /nsm-vertx/*.iml
+/nsm-websocket-server/*.iml
+/nsm-websocket/*.iml
+/nsm-bean/*.iml
