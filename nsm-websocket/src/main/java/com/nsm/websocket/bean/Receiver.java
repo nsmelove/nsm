@@ -1,10 +1,13 @@
 package com.nsm.websocket.bean;
 
 import com.google.common.collect.Sets;
+import io.vertx.core.shareddata.AsyncMap;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,32 +15,38 @@ import java.util.Set;
  */
 public class Receiver {
     private long userId;
+    /**
+     * 用户对应哪些session接收消息，为空表示所有用户都接收
+     */
     private Set<String> sessionIds;
+    /**
+     * 用户的哪些session不接收消息
+     */
     private Set<String> ignoreSids;
 
     public static Receiver newReceiver(long userId){
         Receiver receiver = new Receiver();
         receiver.setUserId(userId);
         return receiver;
-    };
+    }
 
     public static Receiver newReceiver(long userId, Collection<String> sessionIds){
         Receiver receiver = new Receiver();
         receiver.setUserId(userId);
-        if(sessionIds != null && !sessionIds.isEmpty()){
+        if(sessionIds != null){
             receiver.setSessionIds(Sets.newHashSet(sessionIds));
         }
         return receiver;
-    };
+    }
 
     public static Receiver newReceiverIgnore(long userId, Collection<String> ignoreSids){
         Receiver receiver = new Receiver();
         receiver.setUserId(userId);
-        if(ignoreSids != null && !ignoreSids.isEmpty()){
+        if(ignoreSids != null){
             receiver.setIgnoreSids(Sets.newHashSet(ignoreSids));
         }
         return receiver;
-    };
+    }
 
     public long getUserId() {
         return userId;

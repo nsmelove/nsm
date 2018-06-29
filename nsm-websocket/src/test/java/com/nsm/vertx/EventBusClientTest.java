@@ -17,6 +17,7 @@ public class EventBusClientTest {
         WebSocketAPI client = WebSocketAPI.create(Vertx.vertx());
         client.consume("111", (rec, packet) ->{
             System.out.println("rec:{}"+ rec+ " packet:" + packet);
+            return null;
         });
         List<Receiver> receivers = Lists.newArrayList(
                 Receiver.newReceiver(1111L),
@@ -26,7 +27,7 @@ public class EventBusClientTest {
                 Receiver.newReceiver(55555L),
                 Receiver.newReceiver(66666L)
         );
-        client.sendPacket(receivers, Packet.newPacket(0, Packet.DataType.ACK, null));
+        client.sendPacket(receivers, Packet.newPacket(0, Packet.DataType.ACK, null), null);
 
     }
 }

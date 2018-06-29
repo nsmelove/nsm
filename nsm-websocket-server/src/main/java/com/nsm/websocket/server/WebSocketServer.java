@@ -59,7 +59,6 @@ public class WebSocketServer extends AbstractVerticle{
     }
 
     public static void main(String[] args){
-        VertxOptions vOptions = new VertxOptions();
         Consumer<Vertx> run = (vertx) ->{
             DeploymentOptions dOptions = new DeploymentOptions();
             vertx.deployVerticle(WebSocketServer.class, dOptions, res ->{
@@ -76,6 +75,7 @@ public class WebSocketServer extends AbstractVerticle{
                 }
             });
         };
+        VertxOptions vOptions = new VertxOptions();
         if(SystemConfig.clusterMode) {
             Vertx.clusteredVertx(vOptions, res -> {
                 if(res.succeeded()) {

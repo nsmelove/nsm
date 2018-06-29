@@ -53,7 +53,7 @@ public class ConnClient{
 
     private void onFrame(WebSocketFrame frame){
         String packetStr = frame.textData();
-        logger.info("server received packet: {}, from: {}", packetStr, socket.remoteAddress());
+        logger.info("socket:{}-{} received packet: {}, from: {}", userId, sessionId, packetStr, socket.remoteAddress());
         Packet ack = new Packet();
         ack.setType(DataType.ACK.getValue());
         Handler<ErrorCode> ackHandler = res ->{

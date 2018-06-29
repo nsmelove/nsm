@@ -25,7 +25,7 @@ public class WebSocketClient {
                 System.out.println("client on msg:" + frame.textData());
 
                 if(Packet.parseFrom(frame.textData()).getType() == Packet.DataType.MESSAGE.getValue()) {
-                    vertx.setTimer(1,tm ->{
+                    vertx.setTimer(5000,tm ->{
                         Message message = new Message();
                         message.setToId(1529916046421001L);
                         message.setContent("你好啊，美女");
@@ -50,7 +50,7 @@ public class WebSocketClient {
             ws.frameHandler(frame ->{
                 System.out.println("client on msg:" + frame.textData());
                 if(Packet.parseFrom(frame.textData()).getType() == Packet.DataType.MESSAGE.getValue()){
-                    vertx.setTimer(1, tm ->{
+                    vertx.setTimer(5000, tm ->{
                         Message message = new Message();
                         message.setToId(1527524717296L);
                         message.setContent("你好啊，帅哥");

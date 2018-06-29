@@ -1,5 +1,7 @@
 package com.nsm.websocket.server.service;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 
 import com.google.common.collect.Maps;
@@ -8,6 +10,7 @@ import com.nsm.bean.ErrorCode;
 import com.nsm.bean.message.Message;
 import com.nsm.bean.message.RegInfo;
 import com.nsm.bean.packet.Packet;
+import com.nsm.common.utils.IdUtils;
 import com.nsm.core.SpringContainer;
 import com.nsm.core.service.MessageService;
 import com.nsm.core.service.SessionService;
@@ -24,10 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,7 +37,7 @@ public interface WebSocketService {
 
     void sendPacket(long userId, Packet packet);
 
-    void sendPacket(long userId, Packet packet, Collection<String> ignoreSids);
+    void sendPacketIgnore(long userId, Packet packet, Collection<String> ignoreSids);
 
     void sendPacket(Collection<Receiver> receivers, Packet packet);
     /**
@@ -75,27 +75,31 @@ public interface WebSocketService {
                 if(sessionClientMap != null) {
                     sessionClientMap.remove(client.getSessionId());
                 }
-                webSocketAPI.quit(client.getUserId(), client.getSessionId());
+                webSocketAPI.quit(client.getUserId(), client.getSessionId(), deploymentID);
             }
 
-            private void sendPacketLocal(Collection<Receiver> receivers, Packet packet){
+            private Map<Long, Set<String>> sendPacketLocal(Map<Long, Set<String>> receivers, Packet packet){
                 logger.debug("send local packet:{} ,receivers:{}", packet, receivers);
-                receivers.forEach(receiver ->{
-                    Map<String, ConnClient> sessionClientMap = userClientMap.get(receiver.getUserId());
+                Map<Long, Set<String>> successReceivers = Maps.newHashMapWithExpectedSize(receivers.size());
+                receivers.forEach((uid, sidSet) ->{
+                    Map<String, ConnClient> sessionClientMap = userClientMap.get(uid);
                     if(sessionClientMap != null) {
-                        sessionClientMap.forEach((sid, client) -> {
-                            if ((CollectionUtils.isEmpty(receiver.getSessionIds()) || receiver.getSessionIds().contains(sid))
-                                    && (receiver.getIgnoreSids() == null || !receiver.getIgnoreSids().contains(sid))) {
+                        for(String sid : sidSet) {
+                            ConnClient client = sessionClientMap.get(sid);
+                            if(client != null) {
                                 client.sendPacket(packet);
+                                Set<String> successSidSet = successReceivers.computeIfAbsent(uid, k -> Sets.newHashSetWithExpectedSize(sidSet.size()));
+                                successSidSet.add(sid);
                             }
-                        });
+                        }
                     }
                 });
+                return successReceivers;
             }
 
             @Override
             public void sendPacket(long userId, Packet packet){
-                logger.debug("send packet:{},userId:{}", packet, userId);
+                logger.debug("sendPacket packet:{},userId:{}", packet, userId);
                 Map<String, ConnClient> sessionClientMap = userClientMap.get(userId);
                 Set<String> busIgnoreSids = Sets.newHashSet();
                 if(sessionClientMap != null) {
@@ -105,12 +109,14 @@ public interface WebSocketService {
                     busIgnoreSids.addAll(sessionClientMap.keySet());
                 }
                 Receiver otherReceiver = Receiver.newReceiverIgnore(userId, busIgnoreSids);
-                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet);
+                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet, successReceivers ->{
+                    logger.info("successReceivers:{}", successReceivers);
+                });
             }
 
             @Override
-            public void sendPacket(long userId, Packet packet, Collection<String> ignoreSids){
-                logger.debug("send packet:{},userId:{},ignoreSids:{}", packet, userId, ignoreSids);
+            public void sendPacketIgnore(long userId, Packet packet, Collection<String> ignoreSids){
+                logger.debug("sendPacketIgnore, packet:{},userId:{},ignoreSids:{}", packet, userId, ignoreSids);
                 Map<String, ConnClient> sessionClientMap = userClientMap.get(userId);
                 Set<String> busIgnoreSids = Sets.newHashSet();
                 if(sessionClientMap != null){
@@ -125,7 +131,9 @@ public interface WebSocketService {
                     busIgnoreSids.addAll(ignoreSids);
                 }
                 Receiver otherReceiver = Receiver.newReceiverIgnore(userId, busIgnoreSids);
-                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet);
+                webSocketAPI.sendPacket(Lists.newArrayList(otherReceiver), packet, successReceivers ->{
+                    logger.info("successReceivers:{}", successReceivers);
+                });
             }
 
             @Override
@@ -151,7 +159,9 @@ public interface WebSocketService {
                     }
                     otherReceivers.add(otherReceiver);
                 });
-                webSocketAPI.sendPacket(otherReceivers, packet);
+                webSocketAPI.sendPacket(otherReceivers, packet, successReceivers ->{
+                    logger.info("successReceivers:{}", successReceivers);
+                });
             }
 
             @Override
@@ -186,6 +196,7 @@ public interface WebSocketService {
                 }else {
                     resultHandler.handle(ErrorCode.OK);
                 }
+                message.setMessageId(IdUtils.nextLong());
                 message.setFromId(client.getUserId());
                 message.setTimestamp(System.currentTimeMillis());
                 Packet msgPacket = Packet.newPacket(message.getTimestamp(), Packet.DataType.MESSAGE, message);
@@ -202,7 +213,7 @@ public interface WebSocketService {
                         sendPacket(receivers, msgPacket);
                     } else {
                         sendPacket(message.getToId(), msgPacket);
-                        sendPacket(message.getFromId(), msgPacket, Lists.newArrayList(client.getSessionId()));
+                        sendPacketIgnore(message.getFromId(), msgPacket, Lists.newArrayList(client.getSessionId()));
                     }
                     messageService.addMsg(message);
                     f.complete(null);
