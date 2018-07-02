@@ -59,7 +59,7 @@ public interface WebSocketService {
             private String deploymentID =verticle.deploymentID();
             private Vertx vertx = verticle.getVertx();
             private Map<Long,Map<String, ConnClient>> userClientMap = new ConcurrentHashMap<>();
-            private WebSocketAPI webSocketAPI = WebSocketAPI.create(vertx).consume(deploymentID, this::sendPacketLocal);
+            private WebSocketAPI webSocketAPI = WebSocketAPI.create(vertx).consume(deploymentID, this::sendPacketLocal).subscribe(this::sendPacketLocal);
             private SessionService sessionService = SpringContainer.getBean(SessionService.class);
             private MessageService messageService = SpringContainer.getBean(MessageService.class);
             private UserGroupService userGroupService = SpringContainer.getBean(UserGroupService.class);
@@ -78,7 +78,7 @@ public interface WebSocketService {
                 webSocketAPI.quit(client.getUserId(), client.getSessionId(), deploymentID);
             }
 
-            private Map<Long, Set<String>> sendPacketLocal(Map<Long, Set<String>> receivers, Packet packet){
+            public Map<Long, Set<String>> sendPacketLocal(Map<Long, Set<String>> receivers, Packet packet){
                 logger.debug("send local packet:{} ,receivers:{}", packet, receivers);
                 Map<Long, Set<String>> successReceivers = Maps.newHashMapWithExpectedSize(receivers.size());
                 receivers.forEach((uid, sidSet) ->{
@@ -95,6 +95,20 @@ public interface WebSocketService {
                     }
                 });
                 return successReceivers;
+            }
+
+            public void sendPacketLocal(List<Long> uids, Packet packet){
+                logger.debug("send local packet:{} ,uids:{}", packet, uids);
+                Map<Long, Set<String>> successReceivers = Maps.newHashMapWithExpectedSize(uids.size());
+                uids.forEach(uid ->{
+                    Map<String, ConnClient> sessionClientMap = userClientMap.get(uid);
+                    if(sessionClientMap != null){
+                        sessionClientMap.forEach((sid, client) ->{
+                            client.sendPacket(packet);
+                        });
+                    }
+
+                });
             }
 
             @Override

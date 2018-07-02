@@ -1,25 +1,30 @@
 package com.nsm.websocket;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nsm.bean.packet.Packet;
+import com.nsm.common.redis.RedisUtil;
 import com.nsm.common.utils.JsonUtils;
 import com.nsm.websocket.bean.Receiver;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.AsyncMap;
 import io.vertx.core.shareddata.SharedData;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.JedisPubSub;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Created by nieshuming on 2018/6/26
@@ -30,16 +35,24 @@ public class WebSocketAPI{
     private final static String headerReceiver ="receivers";
     private final static String sharedDataDeploy = "deployMap";
     private final static String sdDpUsSePrefix = "uSessionMap.";
+    private final static String redisChannel ="channel.ws";
+    private final static Supplier<JedisCluster> jedisSup = Suppliers.memoize(RedisUtil::getJedisCluster);
+    private Vertx vertx;
     private EventBus eventBus;
     private SharedData sharedData;
     private MessageConsumer<String> consumer;
+
+    private JedisPubSub jedisPubSub;
+
     private WebSocketAPI(){}
+
     public static WebSocketAPI create(Vertx vertx){
         WebSocketAPI client = new WebSocketAPI();
+        client.vertx = vertx;
         client.eventBus = vertx.eventBus();
         client.sharedData = vertx.sharedData();
         return client;
-    };
+    }
 
     public WebSocketAPI getDeployMap(Handler<AsyncResult<AsyncMap<String, Integer>>> resultHandler){
         sharedData.getAsyncMap(sharedDataDeploy, resultHandler::handle);
@@ -234,46 +247,7 @@ public class WebSocketAPI{
         return this;
     }
 
-//    public WebSocketAPI quit(long userId, Collection<String> sessionIds){
-//        if(userSessionMap == null || CollectionUtils.isEmpty(sessionIds)) {
-//            return this;
-//        }
-//        userSessionMap.get(userId, sidRes ->{
-//            if(sidRes.succeeded()) {
-//                Map<String,String> sidDeployIdMap = sidRes.result();
-//                if(sidDeployIdMap != null) {
-//                    sessionIds.forEach(sessionId ->{
-//                        sidDeployIdMap.remove(sessionId);
-//                    });
-//                    if(sidDeployIdMap.isEmpty()) {
-//                        userSessionMap.remove(userId, remRes ->{
-//                            logger.debug("user:{} sessions:{} quit success ? {}", userId, sessionIds, remRes.succeeded());
-//                        });
-//                    }else {
-//                        userSessionMap.put(userId, sidDeployIdMap, putRes ->{
-//                            logger.debug("user:{} sessions:{} quit success ? {}", userId, sessionIds, putRes.succeeded());
-//                        });
-//                    }
-//                }
-//            }else {
-//                logger.error("user:{} sessions:{} quit deployId failed", userId, sessionIds, sidRes.cause());
-//            }
-//        });
-//        return this;
-//    }
-//
-//    public WebSocketAPI joinSessions(long userId, Handler<Map<String,String>> resultHandler){
-//        if(userSessionMap == null) {
-//            resultHandler.handle(null);
-//            return this;
-//        }
-//        userSessionMap.get(userId, sidRes ->{
-//            resultHandler.handle(sidRes.result());
-//        });
-//        return this;
-//    }
-
-    private Future<Map<Long, Set<String>>> sendPacket(String deployId, Map<Long, Set<String>> uSidsMap, Packet packet) {
+    public Future<Map<Long, Set<String>>> sendPacket(String deployId, Map<Long, Set<String>> uSidsMap, Packet packet) {
         Future<Map<Long, Set<String>>> future = Future.future();
         String address = addressDeployPrefix + deployId;
         String packetStr = JsonUtils.toJson(packet);
@@ -414,5 +388,49 @@ public class WebSocketAPI{
             }
         });
         return this;
+    }
+
+    public WebSocketAPI subscribe(BiConsumer<List<Long>, Packet> packetHandler){
+        if(jedisPubSub == null || !jedisPubSub.isSubscribed()) {
+            jedisPubSub = new JedisPubSub() {
+                @Override
+                public void onMessage(String channel, String message) {
+                    logger.info("channel:{} received msg:{}", channel, message);
+                    JsonObject jsonObject = new JsonObject(message);
+                    JsonArray uidArray = jsonObject.getJsonArray(headerReceiver);
+                    List<Long> uids = Lists.newArrayListWithExpectedSize(uidArray.size());
+                    for(int i = 0 ; i< uidArray.size(); i ++) {
+                        uids.add(uidArray.getLong(i));
+                    }
+                    JsonObject packetObject = jsonObject.getJsonObject("body");
+                    Packet packet = packetObject.mapTo(Packet.class);
+                    packetHandler.accept(uids, packet);
+                }
+            };
+            new Thread(){
+                @Override
+                public void run() {
+                    jedisSup.get().subscribe(jedisPubSub, redisChannel);
+                }
+            }.start();
+        }
+        return this;
+    }
+
+    public WebSocketAPI unSubscribe(){
+        if(this.jedisPubSub != null && this.jedisPubSub.isSubscribed()) {
+            this.jedisPubSub.unsubscribe();
+            this.jedisPubSub = null;
+        }
+        return this;
+    }
+
+    public static void publish(Collection<Long> uids, Packet packet){
+        if(uids != null && !uids.isEmpty() && packet != null) {
+            Map<String,Object> map = Maps.newHashMapWithExpectedSize(2);
+            map.put(headerReceiver, uids);
+            map.put("body", packet);
+            jedisSup.get().publish(redisChannel, JsonUtils.toJson(map));
+        }
     }
 }
