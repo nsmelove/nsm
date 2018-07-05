@@ -22,7 +22,6 @@ import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 

@@ -1,18 +1,22 @@
-package com.nsm.core.bean;
+package com.nsm.core.pojo;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * 小组成员
+ * 小组成员信息
  *
  * @author Created by nsm on 2018/6/11.
  */
-public class GroupMember {
+public class GroupMemberInfo {
 
     private long groupId;
 
     private long memberId;
+
+    private String nickname;
+
+    private String userIcon;
 
     private boolean isAdmin;
     /**
@@ -36,6 +40,22 @@ public class GroupMember {
 
     public void setMemberId(long memberId) {
         this.memberId = memberId;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
+    }
+
+    public void setUserIcon(String userIcon) {
+        this.userIcon = userIcon;
     }
 
     public boolean isAdmin() {

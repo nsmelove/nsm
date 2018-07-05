@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.nsm.core.dao.UserDao">
-    <insert id="addUser" parameterType="com.nsm.core.bean.User">
+    <insert id="addUser" parameterType="com.nsm.core.entity.User">
         insert into user(
           userId,
           userType,
@@ -25,7 +25,7 @@
         )
     </insert>
 
-    <select id="getUser" resultType="com.nsm.core.bean.User">
+    <select id="getUser" resultType="com.nsm.core.entity.User">
         SELECT
           userId,
           userType,
@@ -44,7 +44,7 @@
       select count(userId) from user
     </select>
 
-    <select id="getUserByUsername" resultType="com.nsm.core.bean.User">
+    <select id="getUserByUsername" resultType="com.nsm.core.entity.User">
         SELECT
           userId,
           userType,
@@ -59,7 +59,7 @@
         where username = #{username}
     </select>
 
-    <select id="getUsersByIds" resultType="com.nsm.core.bean.User">
+    <select id="getUsersByIds" resultType="com.nsm.core.entity.User">
         SELECT
           userId,
           userType,
@@ -77,7 +77,7 @@
         </foreach>
     </select>
 
-    <select id="getUsers" resultType="com.nsm.core.bean.User">
+    <select id="getUsers" resultType="com.nsm.core.entity.User">
         SELECT
           userId,
           userType,
@@ -93,7 +93,7 @@
         limit #{offset},#{limit}
     </select>
 
-    <update id="updateUser" parameterType="com.nsm.core.bean.User$Update">
+    <update id="updateUser" parameterType="com.nsm.core.entity.User$Update">
         update user
         <set>
             <if test="userType != null">

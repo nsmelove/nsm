@@ -25,6 +25,9 @@ public class ErrorCode {
     public static final ErrorCode USER_GROUP_LEVEL_LIMIT = new ErrorCode(1101, "用户群组层级达到上限");
     public static final ErrorCode GROUP_MEMBER_LIMIT = new ErrorCode(1110, "群组成员达到上限");
     public static final ErrorCode GROUP_MEMBER_NOT_IN_PARENT = new ErrorCode(1111, "群组成员不在父级群组中");
+
+    public static final ErrorCode ALREADY_CONTACT = new ErrorCode(1200, "已经是好友");
+    public static final ErrorCode TARGET_ALREADY_CONTACT_REQ = new ErrorCode(1201, "对方已发送好友请求");
     private int code;
     private String msg;
     public ErrorCode(int code, String msg){

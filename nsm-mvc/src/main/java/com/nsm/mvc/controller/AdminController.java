@@ -1,13 +1,13 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.core.bean.ProductCategory;
-import com.nsm.core.bean.ProductProperty;
-import com.nsm.core.bean.User;
+import com.nsm.core.entity.ProductCategory;
+import com.nsm.core.entity.ProductProperty;
+import com.nsm.core.entity.User;
 import com.nsm.core.exception.BusinessException;
 import com.nsm.bean.ErrorCode;
 import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserService;
-import com.nsm.core.view.UserInfo;
+import com.nsm.core.pojo.UserInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,8 +38,10 @@ public class AdminController extends ErrorHandler{
     @RequestMapping("/user/list")
     @ResponseBody
     public List<User> userList(@RequestAttribute long uid,
-                            @RequestParam(required = false) int offset, @RequestParam(required = false) int limit,
-                            @RequestParam(required = false) int userType, @RequestParam(required = false) int status){
+                            @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit,
+                            @RequestParam(required = false) Integer userType, @RequestParam(required = false) Integer status){
+        offset = offset == null ? 0 : offset;
+        limit = limit == null ? 20 : limit;
         UserInfo loginUserInfo = userService.getUserInfo(uid);
         if(loginUserInfo.getUserType() != User.UserType.ADMIN.ordinal()) {
             throw new BusinessException(ErrorCode.NO_PERMISSION);
@@ -73,8 +75,8 @@ public class AdminController extends ErrorHandler{
     @RequestMapping("/group/list")
     @ResponseBody
     public List<Object> groupList(@RequestAttribute String sid,
-                            @RequestParam(required = false) int offset, @RequestParam(required = false) int limit,
-                            @RequestParam(required = false) int userType, @RequestParam(required = false) int status){
+                            @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit,
+                            @RequestParam(required = false) Integer userType, @RequestParam(required = false) Integer status){
         //TODO
         return null;
     }
@@ -110,7 +112,7 @@ public class AdminController extends ErrorHandler{
     @RequestMapping("/product/category/list")
     @ResponseBody
     public List<ProductCategory> productCategorys(@RequestAttribute String sid,
-                                                  @RequestParam(required = false) int offset, @RequestParam(required = false) int limit){
+                                                  @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit){
         //TODO
         return null;
     }
@@ -125,7 +127,7 @@ public class AdminController extends ErrorHandler{
     @RequestMapping("/product/property/list")
     @ResponseBody
     public List<ProductProperty> productProperties(@RequestAttribute String sid,
-                                   @RequestParam(required = false) int offset, @RequestParam(required = false) int limit){
+                                   @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit){
         //TODO
         return null;
     }

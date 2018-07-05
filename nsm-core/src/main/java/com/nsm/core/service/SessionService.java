@@ -3,7 +3,7 @@ package com.nsm.core.service;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nsm.common.redis.RedisUtil;
-import com.nsm.core.bean.Session;
+import com.nsm.core.entity.Session;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisCluster;
@@ -112,7 +112,7 @@ public class SessionService {
         long now = System.currentTimeMillis();
         Set<String> sids = Sets.newLinkedHashSetWithExpectedSize(sidScores.size());
         for(Tuple sidScore : sidScores) {
-            if(now - sidScore.getScore() > SESSION_EXP_TIME) {
+            if(now - sidScore.getScore() > SESSION_EXP_TIME * 1000L) {
                 jedis.zrem(userSidsKey, sidScore.getElement());
             }else {
                 sids.add(sidScore.getElement());

@@ -25,15 +25,15 @@ public class MessageService {
     private UserGroupService userGroupService;
     private JedisCluster jedis  = RedisUtil.getJedisCluster();
 
-    private String getUserMsgTargetKey(long userId){
+    private String getUserMsgTargetsKey(long userId){
         return "uMsgTargets:" + userId;
     }
 
-    private String getUserMsgKey(long userId, long targetId){
+    private String getUserMsgsKey(long userId, long targetId){
         return "uMsgs:" + Hashing.md5().hashString(userId +":" + targetId).toString().substring(8, 24);
     }
 
-    private String getGroupMsgKey(long groupId){
+    private String getGroupMsgsKey(long groupId){
         return "gMsgs:" + groupId;
     }
 
@@ -41,34 +41,35 @@ public class MessageService {
         double score = msg.getMessageId();
         String msgStr = JsonUtils.toJson(msg);
         if(msg.getToType() == Message.ToType.GROUP.ordinal()) {
-            String groupMsgKey = getGroupMsgKey(msg.getToId());
+            String groupMsgKey = getGroupMsgsKey(msg.getToId());
             jedis.zadd(groupMsgKey, score, msgStr);
             List<Long> memberIds = userGroupService.groupMemberIdList(msg.getToId());
             for(long memberId : memberIds) {
-                String uTargetsKey = getUserMsgTargetKey(memberId);
+                String uTargetsKey = getUserMsgTargetsKey(memberId);
                 jedis.hset(uTargetsKey, String.valueOf(msg.getToId()), msgStr);
             }
         }else {
-            String fromMsgKey = getUserMsgKey(msg.getFromId(), msg.getToId());
-            jedis.zadd(fromMsgKey, score, msgStr);
-            String toMsgKey = getUserMsgKey(msg.getToId(), msg.getFromId());
-            jedis.zadd(toMsgKey, score, msgStr);
-            String fromTargetsKey = getUserMsgTargetKey(msg.getFromId());
+            String fromMsgsKey = getUserMsgsKey(msg.getFromId(), msg.getToId());
+            jedis.zadd(fromMsgsKey, score, msgStr);
+            String toMsgsKey = getUserMsgsKey(msg.getToId(), msg.getFromId());
+            jedis.zadd(toMsgsKey, score, msgStr);
+            String fromTargetsKey = getUserMsgTargetsKey(msg.getFromId());
             jedis.hset(fromTargetsKey, String.valueOf(msg.getToId()), msgStr);
-            String toTargetsKey = getUserMsgTargetKey(msg.getToId());
+            String toTargetsKey = getUserMsgTargetsKey(msg.getToId());
             jedis.hset(toTargetsKey, String.valueOf(msg.getFromId()), msgStr);
         }
         //TODO 缓存失效,存数据库
     }
 
     public List<Message> getUserMsgs(long userId, long targetId, int targetType, long lastId, int limit){
-        String msgsKey = null;
+        String msgKey = null;
         if(targetType == Message.ToType.GROUP.ordinal()) {
-            msgsKey = getGroupMsgKey(targetId);
+            msgKey = getGroupMsgsKey(targetId);
         }else {
-            msgsKey = getUserMsgKey(userId, targetId);
+            msgKey = getUserMsgsKey(userId, targetId);
         }
-        Set<String> msgStrs = jedis.zrevrangeByScore(msgsKey, lastId, 0, 0, limit);
+        long scoreMax = lastId == 0 ? Long.MAX_VALUE : lastId - 1;
+        Set<String> msgStrs = jedis.zrevrangeByScore(msgKey, scoreMax, 0, 0, limit);
         if(msgStrs == null || msgStrs.isEmpty()) {
             return Collections.emptyList();
         }else {

@@ -1,6 +1,6 @@
 package com.nsm.core.dao;
 
-import com.nsm.core.bean.UserSetting;
+import com.nsm.core.entity.UserSetting;
 import org.springframework.stereotype.Repository;
 
 /**

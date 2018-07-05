@@ -1,12 +1,12 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.core.bean.User;
-import com.nsm.core.bean.UserSetting;
+import com.nsm.core.entity.User;
+import com.nsm.core.entity.UserSetting;
 import com.nsm.core.exception.BusinessException;
 import com.nsm.bean.ErrorCode;
 import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserService;
-import com.nsm.core.view.UserInfo;
+import com.nsm.core.pojo.UserInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

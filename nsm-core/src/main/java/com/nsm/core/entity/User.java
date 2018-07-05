@@ -1,4 +1,4 @@
-package com.nsm.core.bean;
+package com.nsm.core.entity;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

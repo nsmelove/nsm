@@ -1,4 +1,4 @@
-package com.nsm.core.bean;
+package com.nsm.core.entity;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.data.annotation.Id;
@@ -27,9 +27,9 @@ public class UserGroup {
      */
     boolean silent;
 
-    private long parGroupId;
+    private long parentId;
 
-    private List<Long> subGroupIds;
+    private List<Long> subIds;
 
     private long createTime;
 
@@ -95,20 +95,20 @@ public class UserGroup {
         this.silent = silent;
     }
 
-    public long getParGroupId() {
-        return parGroupId;
+    public long getParentId() {
+        return parentId;
     }
 
-    public void setParGroupId(long parGroupId) {
-        this.parGroupId = parGroupId;
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
     }
 
-    public List<Long> getSubGroupIds() {
-        return subGroupIds;
+    public List<Long> getSubIds() {
+        return subIds;
     }
 
-    public void setSubGroupIds(List<Long> subGroupIds) {
-        this.subGroupIds = subGroupIds;
+    public void setSubIds(List<Long> subIds) {
+        this.subIds = subIds;
     }
 
     public long getCreateTime() {

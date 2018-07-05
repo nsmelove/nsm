@@ -6,6 +6,7 @@ import com.nsm.common.utils.JsonUtils;
 import com.nsm.bean.ErrorCode;
 import com.nsm.core.service.SessionService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -76,15 +77,15 @@ public class AuthFilter implements Filter{
         }
 
         long uid = 0;
-        if(!StringUtils.isEmpty(sid)){
-            request.setAttribute(sessionId,sid);
-            uid = sessionService.getUserId(sid);
-            request.setAttribute(userId, uid);
-        }else {
+        if(StringUtils.isEmpty(sid)){
             sid = IdUtils.nextString32();
-            httpResponse.setHeader(sessionId,sid);
+            httpResponse.setHeader(sessionId, sid);
             httpResponse.addCookie(new Cookie(sessionId, sid));
+        }else {
+            uid = sessionService.getUserId(sid);
         }
+        request.setAttribute(sessionId, sid);
+        request.setAttribute(userId, uid);
         try{
             if(uid == 0 && patternsRequestCondition != null && !patternsRequestCondition.isEmpty()){
                 if(patternsRequestCondition.getMatchingCondition(httpRequest) == null){
@@ -101,7 +102,7 @@ public class AuthFilter implements Filter{
             }
             chain.doFilter(request, response);
         }finally {
-            long cost = (System.nanoTime() -timeBegin) / 1_000_000;
+            long cost = (System.nanoTime() - timeBegin) / 1_000_000;
             String queryString = httpRequest.getQueryString();
             if(queryString == null) {
                 queryString ="";

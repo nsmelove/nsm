@@ -32,7 +32,7 @@ public class BeanUtils {
             org.apache.commons.beanutils.BeanUtils.populate(bean, map);
             return bean;
         } catch (Exception e) {
-            logger.error("map to bean error", e);
+            logger.error("map to entity error", e);
             return null;
         }
     }

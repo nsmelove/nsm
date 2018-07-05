@@ -1,12 +1,12 @@
 package com.nsm.mvc.controller;
 
-import com.nsm.core.bean.UserGroup;
+import com.nsm.core.entity.UserGroup;
 import com.nsm.core.exception.BusinessException;
 import com.nsm.bean.ErrorCode;
 import com.nsm.core.service.UserGroupService;
 import com.nsm.core.service.UserService;
-import com.nsm.core.view.GroupInviteInfo;
-import com.nsm.core.view.GroupMemberInfo;
+import com.nsm.core.pojo.GroupInviteInfo;
+import com.nsm.core.pojo.GroupMemberInfo;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -28,23 +28,24 @@ public class UserGroupController extends ErrorHandler{
 
     @RequestMapping("/list")
     @ResponseBody
-    public List<UserGroup> groupList(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam(required = false) int adminStatus){
-        return userGroupService.getUserGroups(uid, adminStatus);
+    public List<UserGroup> groupList(@RequestAttribute long uid, @RequestAttribute String sid, @RequestParam(required = false) Integer admin){
+        return userGroupService.getUserGroups(uid, admin);
     }
 
     @RequestMapping("/create")
     @ResponseBody
     public long createGroup(@RequestAttribute long uid, @RequestAttribute String sid,
-                            @RequestParam String groupName, @RequestParam(required = false) long parentGroupId){
-        return userGroupService.createGroup(uid, groupName, parentGroupId);
+                            @RequestParam String name, @RequestParam(required = false) Long parentId){
+        parentId = parentId == null ? 0 : parentId;
+        return userGroupService.createGroup(uid, name, parentId);
     }
 
     @RequestMapping("/{gid}/rename")
-    public void renameGroup(@RequestAttribute long uid, @RequestAttribute String sid, @PathVariable long gid, @RequestParam String groupName){
+    public void renameGroup(@RequestAttribute long uid, @RequestAttribute String sid, @PathVariable long gid, @RequestParam String name){
         if(userGroupService.isGroupMember(uid, gid) <= 1){
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
-        userGroupService.renameGroup(gid, groupName);
+        userGroupService.renameGroup(gid, name);
     }
 
     @RequestMapping("/{gid}/delete")
@@ -55,9 +56,9 @@ public class UserGroupController extends ErrorHandler{
         userGroupService.deleteGroup(gid);
     }
 
-    @RequestMapping("/{gid}/member/add")
+    @RequestMapping("/{gid}/member/{memberId}/add")
     public void addMember(@RequestAttribute long uid, @RequestAttribute String sid,
-                          @PathVariable long gid, @RequestParam long memberId){
+                          @PathVariable long gid, @PathVariable long memberId){
         if(userGroupService.isGroupMember(uid, gid) <= 1){
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
@@ -66,7 +67,9 @@ public class UserGroupController extends ErrorHandler{
 
     @RequestMapping("/{gid}/member/list")
     public List<GroupMemberInfo> groupMemberList(@RequestAttribute long uid, @RequestAttribute String sid,
-                          @PathVariable long gid, @RequestParam(required = false) int offset, @RequestParam(required = false) int limit){
+                          @PathVariable long gid, @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit){
+        offset = offset == null ? 0 : offset;
+        limit = limit == null ? 20 : limit;
         if(userGroupService.isGroupMember(uid, gid) == 0){
             UserGroup userGroup = userGroupService.getUserGroup(gid);
             if(userGroup == null) {
@@ -80,19 +83,19 @@ public class UserGroupController extends ErrorHandler{
         return userGroupService.groupMemberInfoList(gid, offset, limit > 0 ? limit : 20);
     }
 
-    @RequestMapping("/{gid}/member/{mid}/setAdmin")
+    @RequestMapping("/{gid}/member/{memberId}/setAdmin")
     public void setAdmin(@RequestAttribute long uid, @RequestAttribute String sid,
-                         @PathVariable long gid, @PathVariable long mid, @RequestParam boolean admin){
+                         @PathVariable long gid, @PathVariable long memberId, @RequestParam boolean admin){
         if(userGroupService.isGroupMember(uid, gid) != 3){
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
-        userGroupService.setGroupAdmin(uid, gid, mid, admin);
+        userGroupService.setGroupAdmin(uid, gid, memberId, admin);
     }
 
-    @RequestMapping("{gid}/member/{mid}/silence")
+    @RequestMapping("{gid}/member/{memberId}/silence")
     public void silence(@RequestAttribute long uid, @RequestAttribute String sid,
-                       @PathVariable long gid, @PathVariable long mid, @RequestParam boolean silent){
-        int isMember = userGroupService.isGroupMember(mid, gid);
+                       @PathVariable long gid, @PathVariable long memberId, @RequestParam boolean silent){
+        int isMember = userGroupService.isGroupMember(memberId, gid);
         if(isMember == 0) {
             throw new BusinessException(ErrorCode.NOT_FOUND);
         }
@@ -100,22 +103,24 @@ public class UserGroupController extends ErrorHandler{
         if(userIsMember <= isMember) {
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
-        userGroupService.silenceGroupMember(uid, gid, mid, silent);
+        userGroupService.silenceGroupMember(uid, gid, memberId, silent);
     }
 
-    @RequestMapping("/{gid}/member/{mid}/remove")
+    @RequestMapping("/{gid}/member/{memberId}/remove")
     public void removeMember(@RequestAttribute long uid, @RequestAttribute String sid,
-                          @PathVariable long gid, @RequestParam long mid){
+                          @PathVariable long gid, @RequestParam long memberId){
         if(userGroupService.isGroupMember(uid, gid) <= 1){
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
-        userGroupService.removeGroupMember(uid, gid, mid);
+        userGroupService.removeGroupMember(uid, gid, memberId);
     }
 
 
     @RequestMapping("/{gid}/invite/list")
     public List<GroupInviteInfo> inviteList(@RequestAttribute long uid, @RequestAttribute String sid,
-                          @PathVariable long gid, @RequestParam(required = false) int offset, @RequestParam(required = false) int limit){
+                          @PathVariable long gid, @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit){
+        offset = offset == null ? 0 : offset;
+        limit = limit == null ? 20 : limit;
         if(userGroupService.isGroupMember(uid, gid) <= 1){
             throw new BusinessException(ErrorCode.NO_PERMISSION);
         }
@@ -124,7 +129,9 @@ public class UserGroupController extends ErrorHandler{
 
     @RequestMapping("/invite/list")
     public List<GroupInviteInfo> inviteList(@RequestAttribute long uid, @RequestAttribute String sid,
-                                        @RequestParam(required = false) int offset, @RequestParam(required = false) int limit){
+                                        @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit){
+        offset = offset == null ? 0 : offset;
+        limit = limit == null ? 20 : limit;
         return userGroupService.userInviteInfoList(uid, offset, limit > 0 ? limit : 20);
     }
 

@@ -3,7 +3,7 @@ package com.nsm.core.cache;
 import com.google.common.collect.Maps;
 import com.nsm.common.memcache.MemcachedUtil;
 import com.nsm.common.utils.JsonUtils;
-import com.nsm.core.view.UserInfo;
+import com.nsm.core.pojo.UserInfo;
 import net.rubyeye.xmemcached.MemcachedClient;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;

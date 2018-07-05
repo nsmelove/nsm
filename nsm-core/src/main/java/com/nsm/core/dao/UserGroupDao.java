@@ -2,7 +2,7 @@ package com.nsm.core.dao;
 
 import com.google.common.collect.Lists;
 import com.nsm.common.mongodb.MongodbUtil;
-import com.nsm.core.bean.UserGroup;
+import com.nsm.core.entity.UserGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -91,10 +91,10 @@ public class UserGroupDao {
             update.set("silent", updateParam.silent);
         }
         if(updateParam.delSubGIds != null && !updateParam.delSubGIds.isEmpty()) {
-            update.pullAll("subGroupIds", updateParam.delSubGIds.toArray());
+            update.pullAll("subIds", updateParam.delSubGIds.toArray());
         }
         if(updateParam.addSubGIds != null && !updateParam.addSubGIds.isEmpty()) {
-            update.addToSet("subGroupIds").each(updateParam.addSubGIds);
+            update.addToSet("subIds").each(updateParam.addSubGIds);
         }
         template.findAndModify(query, update, UserGroup.class);
     }
@@ -105,10 +105,10 @@ public class UserGroupDao {
         template.findAndRemove(query, UserGroup.class);
     }
 
-    public void deleteUserGroups(long parGroupId, long creatorId){
+    public void deleteUserGroups(long parentId, long creatorId){
         Criteria criteria = new Criteria();
-        if(parGroupId > 0) {
-            criteria = criteria.and("parGroupId").is(parGroupId);
+        if(parentId > 0) {
+            criteria = criteria.and("parentId").is(parentId);
         }
         if(creatorId > 0) {
             criteria = criteria.and("creatorId").is(creatorId);

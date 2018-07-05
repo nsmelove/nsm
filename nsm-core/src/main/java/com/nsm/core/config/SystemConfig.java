@@ -30,7 +30,7 @@ public class SystemConfig {
     public static final int userGroupLimit = 100;
 
     /**
-     * 群组能够够创建的子群层级上限
+     * 群组能够够创建的群层级上限
      */
     public static final int groupLevelLimit = 3;
     /**

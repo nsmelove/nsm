@@ -2,8 +2,8 @@ package com.nsm.core.dao;
 
 import com.google.common.collect.Lists;
 import com.nsm.common.mongodb.MongodbUtil;
-import com.nsm.core.bean.GroupInvite;
-import com.nsm.core.bean.GroupMember;
+import com.nsm.core.entity.GroupInvite;
+import com.nsm.core.entity.GroupMember;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

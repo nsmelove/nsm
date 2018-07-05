@@ -1,6 +1,6 @@
-package com.nsm.core.view;
+package com.nsm.core.pojo;
 
-import com.nsm.core.bean.User;
+import com.nsm.core.entity.User;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**

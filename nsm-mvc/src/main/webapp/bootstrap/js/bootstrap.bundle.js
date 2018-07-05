@@ -3636,7 +3636,7 @@
      * Applies the computed styles to the popper element.
      *
      * All the DOM manipulations are limited to this modifier. This is useful in case
-     * you want to integrate Popper.js inside a framework or view library and you
+     * you want to integrate Popper.js inside a framework or pojo library and you
      * want to delegate all the DOM manipulations to it.
      *
      * Note that if you disable this modifier, you must make sure the popper element

@@ -3,19 +3,19 @@ package com.nsm.core.service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.nsm.common.utils.IdUtils;
-import com.nsm.core.bean.GroupInvite;
-import com.nsm.core.bean.GroupMember;
-import com.nsm.core.bean.UserGroup;
-import com.nsm.core.bean.UserSetting;
+import com.nsm.core.entity.GroupInvite;
+import com.nsm.core.entity.GroupMember;
+import com.nsm.core.entity.UserGroup;
+import com.nsm.core.entity.UserSetting;
 import com.nsm.core.config.SystemConfig;
 import com.nsm.core.dao.GroupInviteDao;
 import com.nsm.core.dao.GroupMemberDao;
 import com.nsm.core.dao.UserGroupDao;
 import com.nsm.core.exception.BusinessException;
 import com.nsm.bean.ErrorCode;
-import com.nsm.core.view.GroupInviteInfo;
-import com.nsm.core.view.GroupMemberInfo;
-import com.nsm.core.view.UserInfo;
+import com.nsm.core.pojo.GroupInviteInfo;
+import com.nsm.core.pojo.GroupMemberInfo;
+import com.nsm.core.pojo.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,15 +90,18 @@ public class UserGroupService {
      * 获取用户的群组
      *
      * @param userId 用户Id
-     * @param adminStatus 管理状态；-1.不区分，0.不是管理员，1.用户是管理员（包括创建的），2.用户是创建者
+     * @param adminStatus 管理状态；null.不区分，0.不是管理员，1.用户是管理员（包括创建的），2.用户是创建者
      * @return 用户的群组列表
      */
-    public List<UserGroup> getUserGroups(long userId, int adminStatus) {
+    public List<UserGroup> getUserGroups(long userId, Integer adminStatus) {
         List<UserGroup> groups;
-        if(adminStatus == 2) {
+        if(adminStatus == null) {
+            List<Long> groupIds = groupMemberDao.getMemberGroupIds(userId, null);
+            groups = userGroupDao.batchGetUserGroup(groupIds);
+        }else if(adminStatus == 2) {
             groups = userGroupDao.getUserGroups(0, userId, 0, Integer.MAX_VALUE);
         }else {
-            List<Long> groupIds = groupMemberDao.getMemberGroupIds(userId, adminStatus == -1 ? null : (adminStatus == 1));
+            List<Long> groupIds = groupMemberDao.getMemberGroupIds(userId, adminStatus == 1);
             groups = userGroupDao.batchGetUserGroup(groupIds);
         }
         return groups;
@@ -109,17 +112,17 @@ public class UserGroupService {
      *
      * @param userId 创建者Id
      * @param groupName 群组名称
-     * @param parentGroupId 父级群组Id
+     * @param parentId 父级群组Id
      * @return 用户群组Id
      */
-    public long createGroup(long userId, String groupName, long parentGroupId) {
+    public long createGroup(long userId, String groupName, long parentId) {
         int userGroupCount = userGroupDao.countUserGroup(0, userId);
         if(userGroupCount >= SystemConfig.userGroupLimit){
             throw new BusinessException(ErrorCode.USER_GROUP_LIMIT);
         }
         UserGroup parentGroup = null;
-        if(parentGroupId > 0) {
-            parentGroup = userGroupDao.getUserGroup(parentGroupId);
+        if(parentId > 0) {
+            parentGroup = userGroupDao.getUserGroup(parentId);
             if(parentGroup == null){
                 throw new BusinessException(ErrorCode.NOT_FOUND);
             }
@@ -137,7 +140,7 @@ public class UserGroupService {
         newGroup.setGroupLevel(parentGroup != null ? (short)(parentGroup.getGroupLevel() + 1) : (short)0);
         newGroup.setGroupName(groupName);
         newGroup.setCreateTime(now);
-        newGroup.setParGroupId(parentGroupId);
+        newGroup.setParentId(parentId);
         userGroupDao.addUserGroup(newGroup);
 
         if(parentGroup != null) {
@@ -176,15 +179,15 @@ public class UserGroupService {
         if(group == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND);
         }
-        if(CollectionUtils.isNotEmpty(group.getSubGroupIds())) {
+        if(CollectionUtils.isNotEmpty(group.getSubIds())) {
             Set<Long> supGroupSet = Sets.newHashSet();
             LinkedList<UserGroup> groupQueue = Lists.newLinkedList();
-            groupQueue.addAll(userGroupDao.batchGetUserGroup(group.getSubGroupIds()));
+            groupQueue.addAll(userGroupDao.batchGetUserGroup(group.getSubIds()));
             while (!groupQueue.isEmpty()){
                 UserGroup subGroup = groupQueue.poll();
                 if(!supGroupSet.contains(subGroup.getGroupId())){
                     supGroupSet.add(subGroup.getGroupId());
-                    groupQueue.addAll(userGroupDao.batchGetUserGroup(subGroup.getSubGroupIds()));
+                    groupQueue.addAll(userGroupDao.batchGetUserGroup(subGroup.getSubIds()));
                 }
             }
             if(!supGroupSet.isEmpty()){
@@ -200,10 +203,10 @@ public class UserGroupService {
         groupMemberDao.deleteGroupMembers(groupId);
         groupInviteDao.deleteGroupGroupInvites(groupId, 0);
 
-        if(group.getParGroupId() > 0){
+        if(group.getParentId() > 0){
             UserGroup.Update update = new UserGroup.Update();
             update.delSubGIds = Lists.newArrayList(group.getGroupId());
-            userGroupDao.updateUserGroup(group.getParGroupId(), update);
+            userGroupDao.updateUserGroup(group.getParentId(), update);
         }
     }
 
@@ -223,8 +226,8 @@ public class UserGroupService {
         if(userGroup == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND);
         }
-        if(userGroup.getParGroupId() > 0) {
-            if(groupMemberDao.getGroupMember(userGroup.getParGroupId(), memberId) == null){
+        if(userGroup.getParentId() > 0) {
+            if(groupMemberDao.getGroupMember(userGroup.getParentId(), memberId) == null){
                 throw new BusinessException(ErrorCode.GROUP_MEMBER_NOT_IN_PARENT);
             }
         }
@@ -299,7 +302,6 @@ public class UserGroupService {
         });
     }
 
-
     /**
      * 设置小组管理员
      *
@@ -354,14 +356,14 @@ public class UserGroupService {
             throw new BusinessException(ErrorCode.NOT_FOUND);
         }
         //TODO 发通知
-        if(CollectionUtils.isNotEmpty(userGroup.getSubGroupIds())){
+        if(CollectionUtils.isNotEmpty(userGroup.getSubIds())){
             LinkedList<UserGroup> groupQueue = Lists.newLinkedList();
-            groupQueue.addAll(userGroupDao.batchGetUserGroup(userGroup.getSubGroupIds()));
+            groupQueue.addAll(userGroupDao.batchGetUserGroup(userGroup.getSubIds()));
             while (!groupQueue.isEmpty()){
                 UserGroup subGroup = groupQueue.poll();
                 member = groupMemberDao.deleteGroupMember(subGroup.getGroupId(), memberId);
                 if(member != null){
-                    groupQueue.addAll(userGroupDao.batchGetUserGroup(subGroup.getSubGroupIds()));
+                    groupQueue.addAll(userGroupDao.batchGetUserGroup(subGroup.getSubIds()));
                     //TODO 发通知
                 }
             }

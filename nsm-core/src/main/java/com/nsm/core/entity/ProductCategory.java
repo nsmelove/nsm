@@ -1,26 +1,17 @@
-package com.nsm.core.bean;
+package com.nsm.core.entity;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * 产品属性
+ * 产品分类
  *
  * @author Created by nsm on 2018/6/11.
  */
-public class ProductProperty {
+public class ProductCategory {
 
-    private long propertyId;
-    private long propertyName;
-    private int valueType;
-
-    public enum ValueType{
-        INTEGER,
-        LONG,
-        FLOAT,
-        DATE,
-        STRING,
-    }
+    private long categoryId;
+    private long categoryName;
 
     @Override
     public String toString() {

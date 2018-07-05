@@ -3,7 +3,7 @@ package com.nsm.core.exception;
 import com.nsm.bean.ErrorCode;
 
 /**
- * Created by Administrator on 2018/5/2
+ * Created by nsm on 2018/5/2
  */
 public class BusinessException extends RuntimeException {
     private ErrorCode errorCode;

@@ -1,6 +1,6 @@
 package com.nsm.core.dao;
 
-import com.nsm.core.bean.User;
+import com.nsm.core.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
