@@ -89,6 +89,14 @@
           createTime,
           privacy
         from user
+        <where>
+            <if test="userType != null">
+                and userType = #{userType}
+            </if>
+            <if test="userStatus != null">
+                and userStatus = #{userStatus}
+            </if>
+        </where>
         order by userId
         limit #{offset},#{limit}
     </select>

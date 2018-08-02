@@ -109,23 +109,11 @@ public class UserService {
         if(user.getUserStatus() != User.UserStatus.NORMAL.ordinal()) {
             throw new BusinessException(ErrorCode.USER_FORBIDDEN);
         }
-        if(update.userType != null && (update.userType == user.getUserType() || User.UserType.valueOf(update.userType) == null)) {
-            update.userType = null;
-        }
         if(update.nickname != null && update.nickname.equals(user.getNickname())) {
             update.nickname = null;
         }
         if(update.userIcon != null && update.userIcon.equals(user.getUserIcon())) {
             update.userIcon = null;
-        }
-        if(update.password != null) {
-            update.password = encodePwd(update.userId, update.password);
-            if(update.password.equals(user.getPassword())) {
-                update.password = null;
-            }
-        }
-        if(update.userStatus != null && (update.userStatus == user.getUserStatus() || User.UserStatus.valueOf(update.userStatus) == null)) {
-            update.userStatus = null;
         }
         if(update.privacy != null && (update.privacy == user.getPrivacy() || User.UserPrivacy.valueOf(update.privacy) == null)) {
             update.privacy = null;
@@ -206,7 +194,11 @@ public class UserService {
     }
 
     public List<User> getUsers(int offset, int limit){
-        return userDao.getUsers(offset, limit);
+        return userDao.getUsers(offset, limit, null, null);
+    }
+
+    public List<User> getUsers(int offset, int limit, Integer userType, Integer userStatus){
+        return userDao.getUsers(offset, limit, userType, userStatus);
     }
 
     public UserSetting getUserSetting(long userId){
@@ -221,5 +213,6 @@ public class UserService {
         }
         return setting;
     }
+
 
 }

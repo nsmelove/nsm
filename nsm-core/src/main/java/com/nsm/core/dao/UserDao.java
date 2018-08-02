@@ -23,7 +23,7 @@ public interface UserDao {
 
     List<User> getUsersByIds(@Param("uids") Collection<Long> uids);
 
-    List<User> getUsers(@Param("offset") int offset, @Param("limit") int limit);
+    List<User> getUsers(@Param("offset") int offset, @Param("limit") int limit, @Param("userType")Integer userType, @Param("userStatus")Integer userStatus);
 
     void updateUser(User.Update update);
 

@@ -5,6 +5,7 @@ import com.nsm.core.entity.ProductProperty;
 import com.nsm.core.entity.User;
 import com.nsm.core.exception.BusinessException;
 import com.nsm.bean.ErrorCode;
+import com.nsm.core.service.AdminService;
 import com.nsm.core.service.SessionService;
 import com.nsm.core.service.UserService;
 import com.nsm.core.pojo.UserInfo;
@@ -22,10 +23,7 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController extends ErrorHandler{
     @Resource
-    private SessionService sessionService;
-    @Resource
-    private UserService userService;
-
+    private AdminService adminService;
     /**
      * 用户列表
      * @param uid
@@ -42,42 +40,38 @@ public class AdminController extends ErrorHandler{
                             @RequestParam(required = false) Integer userType, @RequestParam(required = false) Integer status){
         offset = offset == null ? 0 : offset;
         limit = limit == null ? 20 : limit;
-        UserInfo loginUserInfo = userService.getUserInfo(uid);
-        if(loginUserInfo.getUserType() != User.UserType.ADMIN.ordinal()) {
-            throw new BusinessException(ErrorCode.NO_PERMISSION);
-        }
-        List<User> users = userService.getUsers(offset, limit);
-        return users;
+        return adminService.userList(uid, offset, limit, userType, status);
     }
 
     /**
-     * 用户禁止使用
-     * @param sid
+     * 禁用用户
      * @param uid
+     * @param userId
      * @param forbid
      */
-    @RequestMapping("/user/{uid}/forbid")
-    public void forbid(@RequestAttribute String sid, @PathVariable long uid, @RequestParam boolean forbid){
-        //TODO
+    @RequestMapping("/user/{userId}/forbid")
+    public void forbid(@RequestAttribute long uid, @PathVariable long userId, @RequestParam boolean forbid){
+        adminService.forbid(uid, userId, forbid);
     }
 
     /**
      * 设置用户系统管理员
-     * @param sid
      * @param uid
+     * @param userId
      * @param admin
      */
-    @RequestMapping("/user/{uid}/setAdmin")
-    public void setAdmin(@RequestAttribute String sid, @PathVariable long uid, @RequestParam boolean admin){
-        //TODO
+    @RequestMapping("/user/{userId}/setAdmin")
+    public void setAdmin(@RequestAttribute long uid, @PathVariable long userId, @RequestParam boolean admin){
+        adminService.setAdmin(uid, userId, admin);
     }
 
     @RequestMapping("/group/list")
     @ResponseBody
-    public List<Object> groupList(@RequestAttribute String sid,
+    public List<Object> groupList(@RequestAttribute long uid,
                             @RequestParam(required = false) Integer offset, @RequestParam(required = false) Integer limit,
                             @RequestParam(required = false) Integer userType, @RequestParam(required = false) Integer status){
         //TODO
+        //return adminService.groupList(uid, offset, limit, userType, status);
         return null;
     }
 

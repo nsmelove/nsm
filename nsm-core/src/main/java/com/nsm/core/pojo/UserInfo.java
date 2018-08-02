@@ -4,7 +4,7 @@ import com.nsm.core.entity.User;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * Created by nieshuming on 2018/6/11.
+ * Created by nieshuming on 2018/6/11
  */
 public class UserInfo {
 
