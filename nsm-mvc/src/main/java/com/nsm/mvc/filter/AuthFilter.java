@@ -6,7 +6,6 @@ import com.nsm.common.utils.JsonUtils;
 import com.nsm.bean.ErrorCode;
 import com.nsm.core.service.SessionService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,7 @@ public class AuthFilter implements Filter{
     public static final String userId = "uid";
     public static final String noNeedAuthUrlKey = "noNeedAuthUrl";
     public static final String defaultConfigFile = "authConfig.yaml";
-    private PatternsRequestCondition patternsRequestCondition = null;
+    private PatternsRequestCondition noNeedAuthPatternsRequestCondition = null;
     private SessionService sessionService = new SessionService();
 
     @Override
@@ -46,7 +45,7 @@ public class AuthFilter implements Filter{
             Object noNeedAuthUrl = configs.get(noNeedAuthUrlKey);
             if(noNeedAuthUrl instanceof List){
                 List<String> noNeedAuthUrls = (List<String>)noNeedAuthUrl;
-                patternsRequestCondition = new PatternsRequestCondition(noNeedAuthUrls.toArray(new String[noNeedAuthUrls.size()])) ;
+                noNeedAuthPatternsRequestCondition = new PatternsRequestCondition(noNeedAuthUrls.toArray(new String[noNeedAuthUrls.size()])) ;
             }else {
                 logger.warn("config item '{}' error, must be list !", noNeedAuthUrlKey);
             }
@@ -63,6 +62,13 @@ public class AuthFilter implements Filter{
         long timeBegin = System.nanoTime();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String queryString = httpRequest.getQueryString();
+        if(queryString == null) {
+            queryString ="";
+        }else {
+            queryString = "?" + queryString;
+        }
+        logger.info("{} {}{}", httpRequest.getMethod(), httpRequest.getServletPath(), queryString);
         String sid = httpRequest.getHeader(sessionId);
         if(StringUtils.isEmpty(sid)) {
             Cookie[] cookies = httpRequest.getCookies();
@@ -87,8 +93,8 @@ public class AuthFilter implements Filter{
         request.setAttribute(sessionId, sid);
         request.setAttribute(userId, uid);
         try{
-            if(uid == 0 && patternsRequestCondition != null && !patternsRequestCondition.isEmpty()){
-                if(patternsRequestCondition.getMatchingCondition(httpRequest) == null){
+            if(uid == 0 && noNeedAuthPatternsRequestCondition != null && !noNeedAuthPatternsRequestCondition.isEmpty()){
+                if(noNeedAuthPatternsRequestCondition.getMatchingCondition(httpRequest) == null){
                     httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
                     httpResponse.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
                     String resMsg = JsonUtils.toJson(ErrorCode.NO_LOGIN);
@@ -103,12 +109,6 @@ public class AuthFilter implements Filter{
             chain.doFilter(request, response);
         }finally {
             long cost = (System.nanoTime() - timeBegin) / 1_000_000;
-            String queryString = httpRequest.getQueryString();
-            if(queryString == null) {
-                queryString ="";
-            }else {
-                queryString = "?" + queryString;
-            }
             int status = httpResponse.getStatus();
             logger.info("{} {}{} {} {}ms", httpRequest.getMethod(), httpRequest.getServletPath(), queryString , status, cost);
             if(logger.isDebugEnabled()) {

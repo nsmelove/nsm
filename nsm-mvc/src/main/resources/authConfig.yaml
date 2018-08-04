@@ -1,5 +1,6 @@
 #请求拦截配置文件
 
 noNeedAuthUrl:
- - /user/register
- - /user/login
+ - '/**/*.*'
+ - '/user/register'
+ - '/user/login'

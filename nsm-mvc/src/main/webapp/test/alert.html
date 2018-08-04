@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <title></title>
+</head>
+<body>
+<div class="alert alert-dismissible fade show" role="alert">
+    <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<!-- 按钮：用于打开模态框 -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    打开模态框
+</button>
+
+<button type="button" class="btn btn-lg btn-primary" disabled="disabled">Primary button</button>
+<button type="button" class="btn btn-default btn-lg" disabled="disabled">Button</button>
+
+<!-- 模态框 -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- 模态框头部 -->
+            <div class="modal-header">
+                <h4 class="modal-title">模态框头部</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- 模态框主体 -->
+            <div class="modal-body">
+                模态框内容..
+            </div>
+
+            <!-- 模态框底部 -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="../js/jquery.min.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+      //  $('.alert').alert('close')
+    });
+</script>
+
+</body>
+</html>

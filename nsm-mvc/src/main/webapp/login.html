@@ -12,14 +12,14 @@
             transform: translate(-50%,-50%); /*自己的50% */
         }
     </style>
-    <title>注册用户</title>
+    <title>登录页面</title>
 </head>
 <body>
     <div class="container">
         <div class="text-center mb-5">
-            <p class="h1">注册页面</p>
+            <p class="h1">登录页面</p>
         </div>
-        <form id="registerUser">
+        <form id="login">
             <div class="form-group input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text glyphicon glyphicon-user"></span>
@@ -28,18 +28,12 @@
             </div>
             <div class="form-group input-group">
                 <div class="input-group-prepend">
-                    <span class="input-group-text glyphicon glyphicon-heart"></span>
-                </div>
-                <input type="text" class="form-control" name="nickname" placeholder="昵称" required>
-            </div>
-            <div class="form-group input-group">
-                <div class="input-group-prepend">
                     <span class="input-group-text glyphicon glyphicon-lock"></span>
                 </div>
                 <input type="password" class="form-control" name="password" placeholder="密码" required>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-default w-100">注册</button>
+                <button type="submit" class="btn btn-default w-100">登录</button>
             </div>
         </form>
     </div>
@@ -49,20 +43,21 @@
     <script src="js/common.js"></script>
     <script>
         $(document).ready(function(){
-            $("#registerUser").submit(function(event){
+            $("#login").submit(function(event){
+                $("#login :submit").attr("disabled", "disabled");
                 $.ajax({
                     type: "post",
-                    url: "/user/register",
-                    data: $('#registerUser').serialize()
+                    url: "/user/login",
+                    data: $('#login').serialize()
                 }).success(function(message) {
-                    modalShow("注册成功", "恭喜你！注册成功");
+                    $("#login :submit").removeAttr("disabled");
+                    modalShow("登录成功", "恭喜你！登录成功");
                 }).fail(function(err){
-                    console.log(err);
-                    $('#result .modal-header').addClass("alert-warning").text("注册失败");
+                    $("#login :submit").removeAttr("disabled");
                     if(err.responseJSON && err.responseJSON.msg) {
-                        modalShow("注册失败", err.responseJSON.msg, true);
+                        modalShow("登录失败", err.responseJSON.msg, true);
                     }else {
-                        modalShow("注册失败", "注册失败，可能是你注册的姿势不正确", true);
+                        modalShow("登录失败","可能是你登录的姿势不正确！", true);
                     }
                 });
                 return false;

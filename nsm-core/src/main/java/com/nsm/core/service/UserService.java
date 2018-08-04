@@ -65,6 +65,7 @@ public class UserService {
         user.setPassword(encodePwd(userId, password));
         user.setCreateTime(System.currentTimeMillis());
         userDao.addUser(user);
+        logger.info("register new user:{}", user);
         return userId;
     }
 
