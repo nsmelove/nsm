@@ -56,9 +56,9 @@
                     data: $('#registerUser').serialize()
                 }).success(function(message) {
                     modalShow("注册成功", "恭喜你！注册成功");
+                    document.location = "login.html";
                 }).fail(function(err){
                     console.log(err);
-                    $('#result .modal-header').addClass("alert-warning").text("注册失败");
                     if(err.responseJSON && err.responseJSON.msg) {
                         modalShow("注册失败", err.responseJSON.msg, true);
                     }else {

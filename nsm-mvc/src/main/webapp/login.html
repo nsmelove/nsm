@@ -50,8 +50,7 @@
                     url: "/user/login",
                     data: $('#login').serialize()
                 }).success(function(message) {
-                    $("#login :submit").removeAttr("disabled");
-                    modalShow("登录成功", "恭喜你！登录成功");
+                    document.location = "index.html";
                 }).fail(function(err){
                     $("#login :submit").removeAttr("disabled");
                     if(err.responseJSON && err.responseJSON.msg) {

@@ -8,12 +8,12 @@
     <style>
 
         ::-webkit-scrollbar {/*滚动条整体样式*/
-            width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
+            width: 1px;     /*高宽分别对应横竖滚动条的尺寸*/
             height: 1px;
         }
         ::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
-            border-radius: 10px;
-            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 1px;
+            -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,0.2);
             background: lightgray;
         }
         ::-webkit-scrollbar-track {/*滚动条里面轨道*/
@@ -82,10 +82,7 @@
                     <a class="nav-link" href="#">产品</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">联系</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">会话</a>
+                    <a class="nav-link" href="#">收藏</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto mr-auto">
@@ -99,14 +96,13 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-cloud" href="#">消息<span
-                            class="badge badge-primary badge-pill">11</span></a>
+                    <a class="nav-link glyphicon glyphicon-cloud" href="#">消息<span class="badge badge-primary badge-pill">11</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-home" href="#">Drift</a>
+                    <a class="nav-link glyphicon glyphicon-home" id ="user" href="#">Drift</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link glyphicon glyphicon-log-out" href="#">退出</a>
+                    <a class="nav-link glyphicon glyphicon-log-out" id ="logout" href="#">退出</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link glyphicon glyphicon-user" href="#">注册</a>
@@ -118,7 +114,9 @@
     <div class="container">
         <div class="container-body row">
             <div class="session-list col-2 card">
-                <div class="card-header">会话</div>
+                <div class="nav nav-tabs">
+                    <a href="#" class="nav-link disabled">会话</a>
+                </div >
                 <ul class="list-group list-group-flush h-100" style="overflow-y: scroll">
                     <li class="list-group-item">
                         前程忆梦
@@ -265,67 +263,21 @@
             </div>
 
             <div class="contact-list col-2">
-                <ul class="list-group h-100 card" style="overflow-y: scroll">
-                    <div class="card-header">联系人</div>
-                    <ul class="list-group list-group-flush h-100" style="overflow-y: scroll">
-                        <li class="list-group-item">
-                            <span class="text-info">前程忆梦</span>
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            <span class="text-info">前程忆梦</span>
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            <span class="text-info">忆梦</span>
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item ">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active dropdown-toggle" data-toggle="dropdown">联系人</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#">联系人</a>
+                            <a class="dropdown-item" href="#">已发请求</a>
+                            <a class="dropdown-item" href="#">收到请求</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">群组</a>
+                    </li>
+                </ul>
+                <ul class="list-group list-group-flush h-100" id = "contactList" style="overflow-y: scroll">
 
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                        <li class="list-group-item ">
-                            前程忆梦
-                            <span class="badge badge-primary badge-pill">14</span>
-                        </li>
-                    </ul>
                 </ul>
             </div>
         </div>
@@ -333,8 +285,71 @@
     <nav class="navbar navbar-expand-md fixed-bottom small">
         <span class="navbar-text ml-auto mr-auto">@时代际客网络有限公司</span>
     </nav>
-<script src="js/jquery.min.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
-<script src="js/common.js"></script>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+
+        function createContactItem(contact){
+            var template =
+                    '<li class="list-group-item">'+
+                        '<span class="text-info">前程忆梦</span>'+
+                    '</li>';
+            var contactItem = parseDom(template)[0];
+            $(contactItem).find("span").text(contact.nickname);
+            return contactItem;
+        }
+
+        function loadContact(offset, limit){
+            //联系人列表
+            $.ajax({
+                type: "get",
+                url: "/contact/list",
+                data:{offset:offset, limit:limit}
+            }).success(function(contacts) {
+                console.log(contacts);
+                contacts.forEach(function(contact) {
+                   var contactItem = createContactItem(contact);
+                    console.log(contactItem);
+                   $("#contactList").append(contactItem);
+                });
+            }).fail(function(err){
+                if(err.responseJSON && err.responseJSON.code == 1004) {
+                    document.location = "login.html";
+                }else {
+                    console.log(err)
+                }
+            });
+        }
+
+        //初始化页面
+        $(document).ready(function(){
+            $("#logout").click(function(e){
+                $.ajax({
+                    url: "/user/logout"
+                }).success(function() {
+                    document.location = "login.html";
+                }).fail(function(err){
+                    console.log(err)
+                });
+            });
+            //获取用户信息
+            $.ajax({
+                type: "get",
+                url: "/user"
+            }).success(function(user) {
+                $("#user").text(user.nickname);
+            }).fail(function(err){
+                if(err.responseJSON && err.responseJSON.code == 1004) {
+                    document.location = "login.html";
+                }else {
+                    console.log(err)
+                }
+            });
+            //获取联系人列表
+            loadContact(0, 20);
+        });
+    </script>
 </body>
 </html>
