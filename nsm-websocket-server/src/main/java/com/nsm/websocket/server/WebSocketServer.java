@@ -33,7 +33,7 @@ public class WebSocketServer extends AbstractVerticle{
                 httpServer.websocketHandler(ws -> {
                     logger.info("new socket from: {}", ws.remoteAddress());
                     new ConnClient(res.result(), ws);
-                }).listen(80, serverRes ->{
+                }).listen(81, serverRes ->{
                     if(serverRes.succeeded()){
                         logger.info("server start at port {}", serverRes.result().actualPort());
                     }else {

@@ -13,18 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by nsm on 2018/5/27
  */
 public class IdUtils {
-    private static AtomicLong atomicLong = new AtomicLong(RandomUtils.nextLong(0, 1000));
-
     public static long nextLong(){
-        long id = System.currentTimeMillis() * 1000 + atomicLong.incrementAndGet();
-        if (atomicLong.longValue() > 999) {
-            synchronized (atomicLong){
-                if (atomicLong.longValue() > 999) {
-                    atomicLong.set(0);
-                }
-            }
-        }
-        return id;
+        return IdWorker.getInstance().nextId();
     }
 
     public static String nextString16(){

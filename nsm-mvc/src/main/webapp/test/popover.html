@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <title></title>
+</head>
+<body>
+<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+    Popover on top
+</button>
+
+<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+    Popover on right
+</button>
+
+<button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus
+sagittis lacus vel augue laoreet rutrum faucibus.">
+    Popover on bottom
+</button>
+
+<button type="button" class="btn btn-secondary" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+    Popover on left
+</button>
+
+<div class="container">
+    <button type="button" class="btn btn-lg btn-danger" id="" data-placement="bottom" data-toggle="popover" title="Popover title"   >Click to toggle popover</button>
+</div>
+
+<button class="btn btn-primary">下拉</button>
+<div class="card w-25">
+    <nav class="card-title">
+        <a>好友</a>|
+        <a>群组</a>
+    </nav>
+    <ul class="list-group">
+        <li class="list-group-item">aaa</li>
+        <li class="list-group-item">bbb</li>
+    </ul>
+</div>
+<div style="width: 100px;border: solid 1px">aaa</div>
+<div style="display: inline-block;width: 100px;border: 1px solid">bbb</div>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/popper.min.js"></script>
+<script src="../js/common.js"></script>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+            var nav =parseDom("<nav><a>联系人请求</a>|<a>群组请求</a>|<a>群组请求</a></nav>")[0];
+          $('.btn-danger').popover({trigger:'manual',content:nav});
+        $('.btn-danger').mouseover(function(){
+            $('.btn-danger').popover("show");
+        });
+//        $('.btn-danger').mouseout(function(){
+//            $('.btn-danger').popover("hide");
+//        });
+    });
+</script>
+
+</body>
+</html>

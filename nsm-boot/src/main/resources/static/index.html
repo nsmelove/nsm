@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+
+    <script src="js/sockjs.js"></script>
+    <script src="js/stomp.js"></script>
+
+    <script>
+        var sock = new SockJS('/sockjs');
+        sock.onopen = function() {
+            console.log('sockjs open');
+            sock.send('test');
+            sock.close();
+        };
+        sock.onmessage = function(e) {
+            console.log('sockjs message', e.data);
+        };
+        sock.onclose = function() {
+            console.log('sockjs close');
+        };
+
+        var url = "ws://localhost/stomp";
+        var client = Stomp.client(url);
+        var headers ={};
+        function connectCallback (frame) {
+            // 连接成功时（服务器响应 CONNECTED 帧）的回调方法
+            console.log('已连接【' + frame + '】');
+            client.subscribe('/topic/toAll', function (response) {
+                console.log('topic 收到消息【' + response.body + '】');
+            });
+            client.subscribe('/queue/toAll', function (response) {
+                console.log('queue 收到消息【' + response.body + '】');
+            });
+
+            client.subscribe('/other/toAll', function (response) {
+                console.log('other 收到消息【' + response.body + '】');
+            });
+            client.subscribe('/user/toAll', function (response) {
+                console.log('user 收到消息【' + response.body + '】');
+            });
+            client.subscribe('/user/topic/toAll', function (response) {
+                console.log('user topic 收到消息【' + response.body + '】');
+            });
+            client.subscribe('/user/queue/toAll', function (response) {
+                console.log('user queue 收到消息【' + response.body + '】');
+            });
+
+            client.send('/app/toAll',{},'Hello app');
+
+            client.send('/topic/toAll',{},'Hello topic');
+
+            client.send('/queue/toAll',{},'Hello queue');
+
+            client.send('/other/toAll',{},'Hello other');
+            client.send('/user/0/toAll',{},'Hello user 0');
+            client.send('/user/1/toAll',{},'Hello user 1');
+            client.send('/user/2/toAll',{},'Hello user 2');
+        };
+        function errorCallBack (error) {
+            // 连接失败时（服务器响应 ERROR 帧）的回调方法
+            console.log('连接失败【' + error + '】');
+        };
+
+        client.connect(headers, connectCallback, errorCallBack());
+
+
+    </script>
+
+
+</body>
+</html>

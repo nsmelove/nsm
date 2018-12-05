@@ -20,7 +20,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!--set the authentication filter-->
+    <!--set the authentication cofig-->
     <filter>
         <filter-name>authFilter</filter-name>
         <filter-class>com.nsm.mvc.filter.AuthFilter</filter-class>

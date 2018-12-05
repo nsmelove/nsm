@@ -15,6 +15,7 @@ public class SpringContainer implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
+        System.out.println("-------set context--------");
     }
 
     private static void afterInit(){

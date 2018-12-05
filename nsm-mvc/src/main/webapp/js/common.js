@@ -13,32 +13,33 @@ function parseDom(html) {
     return div.childNodes;
 }
 
-function createShowModal(){
-    <!-- 模态框 -->
-    var html =
-        '<div class="modal" tabindex="-1" role="dialog" id="showModal">' +
-            '<div class="modal-dialog modal-dialog-centered" role="document">'+
-                '<div class="modal-content">'+
-                    '<div class="modal-header alert">'+
-                        '<h5 class="modal-title "></h5>'+
-                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
-                            '<span aria-hidden="true">&times;</span>'+
-                        '</button>' +
-                    '</div>' +
-                    '<div class="modal-body"></div>'+
-                    '<div class="modal-footer">'+
-                    '<button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>'+
-                    '</div>'+
-                '</div>'+
-            '</div>'+
-        '</div>';
-    return parseDom(html)[0];
-}
-
+/**
+ * 模态框显示
+ * @param title
+ * @param content
+ * @param warning
+ */
 function modalShow(title, content, warning){
     var modal = document.getElementById("showModal");
     if(!modal) {
-        modal = createShowModal();
+        var html =
+            '<div class="modal" tabindex="-1" role="dialog" id="showModal">' +
+            '<div class="modal-dialog modal-dialog-centered" role="document">'+
+            '<div class="modal-content">'+
+            '<div class="modal-header alert">'+
+            '<h5 class="modal-title "></h5>'+
+            '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+            '<span aria-hidden="true">&times;</span>'+
+            '</button>' +
+            '</div>' +
+            '<div class="modal-body"></div>'+
+            '<div class="modal-footer">'+
+            '<button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>'+
+            '</div>'+
+            '</div>'+
+            '</div>'+
+            '</div>';
+        modal = parseDom(html)[0];
         document.body.appendChild(modal);
     }
     $(modal).find(".alert").removeClass("alert-success alert-warning");
@@ -54,3 +55,4 @@ function modalShow(title, content, warning){
     $(modal).find(".modal-body").text(content);
     $(modal).modal('show');
 }
+

@@ -107,7 +107,6 @@ public interface WebSocketService {
                             client.sendPacket(packet);
                         });
                     }
-
                 });
             }
 

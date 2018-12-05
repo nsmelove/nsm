@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id ="login_container"></div>
+<script src="http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+<script>
+    var obj = new WxLogin({
+        self_redirect:true,
+        id:"login_container",
+        appid: "wxb7b7b4aeaa2cf078",
+        scope: "snsapi_login",
+        redirect_uri: "http://www.gcall.com",
+        state: "",
+        style: "",
+        href: ""
+    });
+</script>
+</body>
+</html>

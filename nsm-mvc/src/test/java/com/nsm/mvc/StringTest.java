@@ -14,5 +14,15 @@ public class StringTest {
         System.out.println("/user/login?username=1".matches("/user/login/"));
         System.out.println("/user/alogin?username=1".contains("/user/login"));
         System.out.println(JsonUtils.toJson(ErrorCode.NO_LOGIN));
+        new Thread(() ->{
+            while (true){
+                System.out.println("time is down");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
